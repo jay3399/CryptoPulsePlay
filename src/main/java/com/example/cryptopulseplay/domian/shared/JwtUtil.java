@@ -1,0 +1,89 @@
+package com.example.cryptopulseplay.domian.shared;
+
+import com.example.cryptopulseplay.domian.user.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class JwtUtil {
+
+    public final String secret;
+
+    @Autowired
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.secret = secret;
+    }
+
+
+
+    public  String generateToken(User user, String purpose) {
+
+        try {
+            return Jwts.builder()
+                    .setSubject(user.getEmail())
+                    .claim("userId", user.getId())
+                    .claim("purpose", purpose)
+                    .setExpiration(
+                            new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)))
+                    .signWith(SignatureAlgorithm.HS256, secret)
+                    .compact();
+
+        } catch (JwtException e) {
+            return null;
+        }
+    }
+
+    public String generateToken(String email, String purpose) {
+
+        try {
+
+            return Jwts.builder()
+                    .setSubject(email)
+                    .claim("purpose", purpose)
+                    .setExpiration(
+                            new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)))
+                    .signWith(SignatureAlgorithm.HS256, secret)
+                    .compact();
+
+        } catch (JwtException e) {
+
+            return null;
+        }
+
+    }
+
+    public String generateRefreshToken(User user) {
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("userId", user.getId())
+                .claim("purpose", "refresh")
+                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7)))  // 7일 동안 유효
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
+    }
+
+
+    public Claims validateToken(String token) {
+
+        try {
+            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        } catch (JwtException e) {
+            return null;
+        }
+
+    }
+
+
+
+
+
+
+
+}
