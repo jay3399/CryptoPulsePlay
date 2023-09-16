@@ -1,4 +1,4 @@
-package com.example.cryptopulseplay.domian.shared;
+package com.example.cryptopulseplay.domian.shared.util;
 
 import com.example.cryptopulseplay.domian.user.model.User;
 import io.jsonwebtoken.Claims;

@@ -1,7 +1,8 @@
 package com.example.cryptopulseplay.application.service;
 
-import com.example.cryptopulseplay.domian.shared.JwtUtil;
+import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.shared.service.EmailService;
+import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
 import com.example.cryptopulseplay.domian.user.service.UserService;
 import java.time.Duration;
@@ -9,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,23 +18,24 @@ public class UserAppService {
 
     private final UserService userService;
     private final EmailService emailService;
-    private final RedisTemplate redisTemplate;
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
 
 
     public Map<String, String> signInOrUp(String email, String deviceInfo) {
 
         User user = userService.findByEmail(email).orElse(User.create(email, deviceInfo));
 
-        redisTemplate.opsForValue().set("user" + email, user);
+        redisUtil.setUserByEmail(email, user);
 
         Map<String, String> tokens = new HashMap<>();
 
-        if (isReauthenticate(user, deviceInfo)) {
+
+        if (user.isReauthenticate(deviceInfo)) {
 
             String token = jwtUtil.generateToken(email, "emailCheck");
 
-            redisTemplate.opsForValue().set(token, email);
+            redisUtil.setTokenByEmail(token, email);
 
             emailService.sendVerificationEmail(email, token);
 
@@ -48,7 +49,7 @@ public class UserAppService {
             String loginToken = jwtUtil.generateToken(user, "loginCheck");
             String refreshToken = jwtUtil.generateRefreshToken(user);
 
-            user.setRefreshToken(user, refreshToken);
+            user.setRefreshToken(refreshToken);
 
             userService.save(user);
 
@@ -63,29 +64,24 @@ public class UserAppService {
 
     public String verifyEmail(String token) {
 
+        String accessToken = userService.verifyEmail(token);
 
-        String email = jwtUtil.validateToken(token).getSubject();
+        if (accessToken != null) {
 
-        User user = (User) redisTemplate.opsForValue().get("user:" + email);
-
-        String storedEmail = (String) redisTemplate.opsForValue().get(token);
-
-        if (storedEmail == null || !email.equals(storedEmail)) {
+            return "<html><script>"
+                    + "localStorage.setItem('loginToken', '" + accessToken + "');"
+                    + "alert('인증이 완료되었습니다.');"
+                    + "setTimeout(function() { window.location.href = '/mainPage'; }, 5000);"
+                    + "</script></html>";
+        } else {
             return null;
-            //예외 반환
+            //예외
         }
-
-        if (!user.isEmailVerified()) {
-            user.markEmailAsVerified(user);
-            userService.save(user);
-        }
-
-        return jwtUtil.generateToken(user, "loginCheck");
-
 
 
     }
 
+    // -> User 클래스로 , 객체 자신의 상태를 스스로 판단하고 관리.객체가 하나의 목적 역할에 집중, 응집도 ++
     private boolean isReauthenticate(User user, String deviceInfo) {
 
         if (!user.isEmailVerified()) {

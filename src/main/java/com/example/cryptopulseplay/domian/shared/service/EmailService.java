@@ -1,7 +1,7 @@
 package com.example.cryptopulseplay.domian.shared.service;
 
-import com.example.cryptopulseplay.domian.shared.JwtUtil;
-import com.example.cryptopulseplay.domian.user.model.User;
+import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
+import com.example.cryptopulseplay.domian.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +16,12 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
-    private final JwtUtil jwtUtil;
-    private final RedisTemplate redisTemplate;
     private static final String MAIL_ADDRESS = "CryptoPulsePLay";
+
+//    private final UserRepository userRepository;
+//    private final JwtUtil jwtUtil;
+//    private final RedisTemplate redisTemplate;
+
 
 
     @Async
@@ -52,12 +55,29 @@ public class EmailService {
     }
 
 
-
-
-
-
-
-
+//    public String verifyEmail(String token) {
+//
+//        String email = jwtUtil.validateToken(token).getSubject();
+//
+//        User user = redisUtil.getUser(email);
+//
+//        String emailInRedis = redisUtil.getEmail(token);
+//
+//        if (emailInRedis == null || !email.equals(email)) {
+//            return null;
+//            //예외처리
+//        }
+//
+//        if (!user.isEmailVerified()) {
+//
+//            user.markEmailAsVerified(user, jwtUtil.generateRefreshToken(user));
+//
+//            userRepository.save(user);
+//        }
+//
+//        return jwtUtil.generateToken(user, "loginCheck");
+//
+//    }
 
 
 
