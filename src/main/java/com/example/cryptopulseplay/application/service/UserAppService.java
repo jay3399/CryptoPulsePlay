@@ -22,6 +22,12 @@ public class UserAppService {
     private final RedisUtil redisUtil;
 
 
+    private static final String EMAIL_CHECK = "emailCheck";
+    private static final String LOGIN_CHECK = "loginCheck";
+
+
+
+
     public Map<String, String> signInOrUp(String email, String deviceInfo) {
 
         User user = userService.findByEmail(email).orElse(User.create(email, deviceInfo));
@@ -30,10 +36,9 @@ public class UserAppService {
 
         Map<String, String> tokens = new HashMap<>();
 
-
         if (user.isReauthenticate(deviceInfo)) {
 
-            String token = jwtUtil.generateToken(email, "emailCheck");
+            String token = jwtUtil.generateToken(email, EMAIL_CHECK);
 
             redisUtil.setTokenByEmail(token, email);
 
@@ -46,7 +51,7 @@ public class UserAppService {
             }
         } else {
 
-            String loginToken = jwtUtil.generateToken(user, "loginCheck");
+            String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);
             String refreshToken = jwtUtil.generateRefreshToken(user);
 
             user.setRefreshToken(refreshToken);
@@ -68,11 +73,7 @@ public class UserAppService {
 
         if (accessToken != null) {
 
-            return "<html><script>"
-                    + "localStorage.setItem('loginToken', '" + accessToken + "');"
-                    + "alert('인증이 완료되었습니다.');"
-                    + "setTimeout(function() { window.location.href = '/mainPage'; }, 5000);"
-                    + "</script></html>";
+            return getAlert(accessToken);
         } else {
             return null;
             //예외
@@ -81,54 +82,62 @@ public class UserAppService {
 
     }
 
+    private static String getAlert(String accessToken) {
+        return "<html><script>"
+                + "localStorage.setItem('loginToken', '" + accessToken + "');"
+                + "alert('인증이 완료되었습니다.');"
+                + "setTimeout(function() { window.location.href = '/mainPage'; }, 5000);"
+                + "</script></html>";
+    }
+
     // -> User 클래스로 , 객체 자신의 상태를 스스로 판단하고 관리.객체가 하나의 목적 역할에 집중, 응집도 ++
-    private boolean isReauthenticate(User user, String deviceInfo) {
-
-        if (!user.isEmailVerified()) {
-            return true;
-        }
-
-        if (isNewDevice(user, deviceInfo)) {
-            return true;
-        }
-
-        if (isLongtime(user)) {
-            return true;
-        }
-
-        return false;
-
-    }
-
-    private static boolean isNewDevice(User user, String deviceInfo) {
-
-        if (deviceInfo != null && deviceInfo.equals(user.getDeviceInfo())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static boolean isLongtime(User user) {
-
-        if (user.getEmailVerificationDate() != null) {
-
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime validationDate = user.getEmailVerificationDate();
-
-            Duration duration = Duration.between(validationDate, now);
-
-            long diffHours = duration.toHours();
-
-            return diffHours > 24;
-
-        }
-
-        return false;
-
-    }
-
-
+//    private boolean isReauthenticate(User user, String deviceInfo) {
+//
+//        if (!user.isEmailVerified()) {
+//            return true;
+//        }
+//
+//        if (isNewDevice(user, deviceInfo)) {
+//            return true;
+//        }
+//
+//        if (isLongtime(user)) {
+//            return true;
+//        }
+//
+//        return false;
+//
+//    }
+//
+//    private static boolean isNewDevice(User user, String deviceInfo) {
+//
+//        if (deviceInfo != null && deviceInfo.equals(user.getDeviceInfo())) {
+//            return false;
+//        }
+//
+//        return true;
+//    }
+//
+//    private static boolean isLongtime(User user) {
+//
+//        if (user.getEmailVerificationDate() != null) {
+//
+//            LocalDateTime now = LocalDateTime.now();
+//            LocalDateTime validationDate = user.getEmailVerificationDate();
+//
+//            Duration duration = Duration.between(validationDate, now);
+//
+//            long diffHours = duration.toHours();
+//
+//            return diffHours > 24;
+//
+//        }
+//
+//        return false;
+//
+//    }
+//
+//
 
 
 }

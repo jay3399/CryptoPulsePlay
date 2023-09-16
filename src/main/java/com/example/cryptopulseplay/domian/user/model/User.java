@@ -31,6 +31,8 @@ public class User implements Serializable {
     private boolean emailVerified = false;
     private String refreshToken;
 
+    private static final long VERIFICATION_EXPIRATION_HOURS = 24;
+
     public boolean isReauthenticate(String deviceInfo) {
 
         if (!this.isEmailVerified()) {
@@ -67,7 +69,7 @@ public class User implements Serializable {
 
             long diffHours = duration.toHours();
 
-            return diffHours > 24;
+            return diffHours > VERIFICATION_EXPIRATION_HOURS;
 
         }
 
