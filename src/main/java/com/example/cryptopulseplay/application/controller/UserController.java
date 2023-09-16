@@ -22,8 +22,7 @@ public class UserController {
 
     @PostMapping("/signIn")
     public ResponseEntity<Map<String, String>> signInOrUp(
-            @Valid @RequestBody EmailValidRequest emailValidRequest,
-            @RequestHeader("DeviceInfo") String device) {
+            @Valid @RequestBody EmailValidRequest emailValidRequest, @RequestHeader("DeviceInfo") String device) {
 
         String email = emailValidRequest.getEmail();
 

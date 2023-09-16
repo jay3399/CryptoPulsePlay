@@ -5,8 +5,6 @@ import com.example.cryptopulseplay.domian.shared.service.EmailService;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
 import com.example.cryptopulseplay.domian.user.service.UserService;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +32,7 @@ public class UserAppService {
 
         redisUtil.setUserByEmail(email, user);
 
-        Map<String, String> tokens = new HashMap<>();
+        Map<String, String> message = new HashMap<>();
 
         if (user.isReauthenticate(deviceInfo)) {
 
@@ -45,11 +43,16 @@ public class UserAppService {
             emailService.sendVerificationEmail(email, token);
 
             if (!user.isEmailVerified()) {
-                tokens.put("message", "환영합니다 , 가입인증 메일을 전송하였습다 인증을 완료해주세요");
+                message.put("message", "환영합니다 , 가입인증 메일을 전송하였습다 인증을 완료해주세요");
             } else {
-                tokens.put("message", "로그인 인증 메일을 보냈습니다 확인해주세요");
+                message.put("message", "로그인 인증 메일을 보냈습니다 확인해주세요");
             }
+
+            return message;
         } else {
+
+            Map<String, String> authTokens = new HashMap<>();
+
 
             String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);
             String refreshToken = jwtUtil.generateRefreshToken(user);
@@ -58,11 +61,12 @@ public class UserAppService {
 
             userService.save(user);
 
-            tokens.put("loginToken", loginToken);
-            tokens.put("refreshToken", refreshToken);
+            authTokens.put("loginToken", loginToken);
+            authTokens.put("refreshToken", refreshToken);
+
+            return authTokens;
         }
 
-        return tokens;
 
     }
 

@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,19 @@ public class JwtUtil {
         }
 
     }
+
+    public static String extractToken(HttpServletRequest request) {
+        String token = getAuthorization(request);
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7); // "Bearer " 접두사를 제거합니다.
+        }
+        return null;
+    }
+
+    private static String getAuthorization(HttpServletRequest request) {
+        return request.getHeader("Authorization");
+    }
+
 
 
 
