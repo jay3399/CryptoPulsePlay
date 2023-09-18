@@ -1,12 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Login / Sign Up</title>
+<!--  <head>-->
+<!--    <meta name="_csrf" content="${_csrf.token}"/>-->
+<!--    <meta name="_csrf_header" content="${_csrf.headerName}"/>-->
+<!--  </head>-->
+
 </head>
 <body>
+<h1>Login / Sign Up</h1>
+<input id="emailInput" type="email" placeholder="Enter your email">
+<button id="submitButton">Submit</button>
+<p id="message"></p>
+<button id="verifyButton" style="display:none;">Verify Email</button>
 
-Hello!
+<script>
 
+  // const csrfToken = document.querySelector("meta[name='_csrf']").content;
+  // const csrfHeader = document.querySelector("meta[name='_csrf_header']").content;
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const emailInput = document.getElementById("emailInput");
+    const submitButton = document.getElementById("submitButton");
+    const messageElement = document.getElementById("message");
+    const verifyButton = document.getElementById("verifyButton");
+
+    let jwtToken = "";
+
+    submitButton.addEventListener("click", async () => {
+      const email = emailInput.value;
+      console.log(email);
+      const deviceInfo = "your-device-info-here";
+
+
+      try {
+        const response = await fetch("/signIn", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "DeviceInfo": deviceInfo,
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        console.log(data);
+
+        if (data.message) {
+          messageElement.textContent = data.message;
+
+        } else {
+          jwtToken = data.loginToken;
+          localStorage.setItem('loginToken', jwtToken);
+          verifyButton.style.display = "block";
+
+        }
+      } catch (error) {
+      }
+    });
+
+    verifyButton.addEventListener("click", async () => {
+
+      const storedToken = localStorage.getItem("loginToken");
+
+      if(!storedToken){
+        alert("이메일 인증을 완료해주세요");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/verifyEmail?token=${storedToken}`, {
+          method: "GET"
+        });
+
+        if (response.ok) {
+          window.location.href = "/mainPage";
+        } else {
+          alert("이메일 인증을 완료해주세요");
+        }
+      } catch (error) {
+        console.error("Error during email verification:", error);
+      }
+    });
+  });
+
+
+</script>
 </body>
 </html>

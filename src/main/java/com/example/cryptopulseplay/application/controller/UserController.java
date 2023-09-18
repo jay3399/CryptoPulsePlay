@@ -2,9 +2,11 @@ package com.example.cryptopulseplay.application.controller;
 
 import com.example.cryptopulseplay.application.request.EmailValidRequest;
 import com.example.cryptopulseplay.application.service.UserAppService;
+import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +21,14 @@ public class UserController {
 
     private final UserAppService userAppService;
 
+    private final JwtUtil jwtUtil;
+
 
     @PostMapping("/signIn")
     public ResponseEntity<Map<String, String>> signInOrUp(
             @Valid @RequestBody EmailValidRequest emailValidRequest, @RequestHeader("DeviceInfo") String device) {
+
+        System.out.println("emailValidRequest = " + emailValidRequest);
 
         String email = emailValidRequest.getEmail();
 
@@ -31,13 +37,27 @@ public class UserController {
         return ResponseEntity.ok(tokens);
     }
 
-
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
 
         String response = userAppService.verifyEmail(token);
 
         return ResponseEntity.ok(response);
+
+    }
+
+    @GetMapping("/verifyLoginToken")
+    public ResponseEntity<String> verifyLoginToken(@RequestParam String loginToken) {
+
+        boolean isValid = jwtUtil.validateToken(loginToken);
+
+        if (isValid) {
+            return ResponseEntity.ok("valid token");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
+        }
+
+
 
     }
 

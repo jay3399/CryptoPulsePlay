@@ -71,12 +71,25 @@ public class JwtUtil {
     }
 
 
-    public Claims validateToken(String token) {
+    public Claims getEmailFromToken(String token) {
 
         try {
             return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         } catch (JwtException e) {
             return null;
+        }
+
+    }
+
+    public boolean validateToken(String token) {
+
+        try {
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+
+            return true;
+        } catch (JwtException | IllegalArgumentException exception) {
+
+            return false;
         }
 
     }

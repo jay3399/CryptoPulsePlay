@@ -24,3 +24,7 @@ spring:
           auth: true
 jwt:
   secret: 6ouCAVlTs2RpGKctFeqtKDC3IzQfIuNSZogfQuGYgvo
+
+logging:
+  level:
+    org.springframework.security: DEBUG

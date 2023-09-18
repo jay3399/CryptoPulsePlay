@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
-    private static final String MAIL_ADDRESS = "CryptoPulsePLay";
+    private static final String MAIL_ADDRESS = "josw90@naver.com";
 
 //    private final UserRepository userRepository;
 //    private final JwtUtil jwtUtil;
@@ -24,8 +24,8 @@ public class EmailService {
 
 
 
-    @Async
     public void sendVerificationEmail(String email, String token) {
+
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
@@ -34,7 +34,7 @@ public class EmailService {
         try {
             helper.setTo(email);
             helper.setFrom(MAIL_ADDRESS);
-            helper.setFrom("이메일 인증을 완료해주세요");
+            helper.setSubject("이메일 인증을 완료해주세요");
 
             String htmlText = "<h3>Click the button below to verify your email:</h3>" +
                     "<a href='http://localhost:8080/verifyEmail?token=" + token + "'>" +
@@ -46,7 +46,11 @@ public class EmailService {
 
             javaMailSender.send(mimeMessage);
 
+            System.out.println("email = " + email);
+
         } catch (MessagingException e) {
+
+            System.out.println("오류");
 
         }
 
