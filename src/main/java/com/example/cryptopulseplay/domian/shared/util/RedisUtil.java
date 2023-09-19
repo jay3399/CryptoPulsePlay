@@ -26,12 +26,12 @@ public class RedisUtil {
 
     public User getUser(String email) {
 
-        return (User) redisTemplate.opsForValue().get(getUserKey(email));
+        return (User) redisTemplate.opsForValue().getAndDelete(getUserKey(email));
 
     }
 
     public String getEmail(String token) {
-        return (String) redisTemplate.opsForValue().get(token);
+        return (String) redisTemplate.opsForValue().getAndDelete(token);
     }
 
 

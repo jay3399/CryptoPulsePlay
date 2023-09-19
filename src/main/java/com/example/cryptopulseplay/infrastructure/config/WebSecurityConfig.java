@@ -23,7 +23,7 @@ public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/" , "/index.html");
+    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/" , "/index.html" ,"/verifyLoginToken");
 //    csrf(csrf -> csrf.disable()).
 
     @Bean

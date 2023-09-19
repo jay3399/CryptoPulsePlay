@@ -25,8 +25,7 @@ public class UserController {
 
 
     @PostMapping("/signIn")
-    public ResponseEntity<Map<String, String>> signInOrUp(
-            @Valid @RequestBody EmailValidRequest emailValidRequest, @RequestHeader("DeviceInfo") String device) {
+    public ResponseEntity<Map<String, String>> signInOrUp(@Valid @RequestBody EmailValidRequest emailValidRequest, @RequestHeader("DeviceInfo") String device) {
 
         System.out.println("emailValidRequest = " + emailValidRequest);
 
@@ -47,9 +46,11 @@ public class UserController {
     }
 
     @GetMapping("/verifyLoginToken")
-    public ResponseEntity<String> verifyLoginToken(@RequestParam String loginToken) {
+    public ResponseEntity<String> verifyLoginToken(@RequestParam String token) {
 
-        boolean isValid = jwtUtil.validateToken(loginToken);
+        boolean isValid = jwtUtil.validateToken(token);
+
+        System.out.println("isValid = " + isValid);
 
         if (isValid) {
             return ResponseEntity.ok("valid token");
