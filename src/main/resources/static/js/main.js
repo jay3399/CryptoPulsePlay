@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   submitButton.addEventListener("click", async () => {
     const email = emailInput.value;
-    const deviceInfo = "device";
+    const deviceInfo = `Browser: ${navigator.userAgent} , PlatForm: ${navigator.platform}`;
 
     try {
       const response = await fetch("/signIn", {
