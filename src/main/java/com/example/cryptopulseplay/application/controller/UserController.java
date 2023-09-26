@@ -27,7 +27,6 @@ public class UserController {
     @PostMapping("/signIn")
     public ResponseEntity<Map<String, String>> signInOrUp(@Valid @RequestBody EmailValidRequest emailValidRequest, @RequestHeader("DeviceInfo") String device) {
 
-        System.out.println("emailValidRequest = " + emailValidRequest);
 
         String email = emailValidRequest.getEmail();
 
@@ -50,7 +49,6 @@ public class UserController {
 
         boolean isValid = jwtUtil.validateToken(token);
 
-        System.out.println("isValid = " + isValid);
 
         if (isValid) {
             return ResponseEntity.ok("valid token");

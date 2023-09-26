@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login / Sign Up</title>
-
-
+  <meta charset="UTF-8">
 </head>
 <body>
 
@@ -44,7 +42,7 @@
             'Authorization': `Bearer ${jwtToken}`
           }
         });
-        const data = await response.json();
+        // const data = await response.json();
 
         if (response.ok) {
           loginPage.style.display = "none";

@@ -23,17 +23,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
 
         String token = JwtUtil.extractToken(request);
-        System.out.println("token = " + token);
 
         if (token != null) {
 
             try {
 
-                System.out.println("filter = " + token);
 
                 boolean b = jwtUtil.validateToken(token);
 
-                System.out.println("b = " + b);
 
                 filterChain.doFilter(request, response);
 

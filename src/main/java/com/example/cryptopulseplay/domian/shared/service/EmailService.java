@@ -1,14 +1,10 @@
 package com.example.cryptopulseplay.domian.shared.service;
 
-import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
-import com.example.cryptopulseplay.domian.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,12 +13,6 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private static final String MAIL_ADDRESS = "josw90@naver.com";
-
-//    private final UserRepository userRepository;
-//    private final JwtUtil jwtUtil;
-//    private final RedisTemplate redisTemplate;
-
-
 
     public void sendVerificationEmail(String email, String token) {
 
@@ -82,6 +72,11 @@ public class EmailService {
 //        return jwtUtil.generateToken(user, "loginCheck");
 //
 //    }
+
+
+//    private final UserRepository userRepository;
+//    private final JwtUtil jwtUtil;
+//    private final RedisTemplate redisTemplate;
 
 
 
