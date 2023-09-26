@@ -24,8 +24,6 @@ public class UserAppService {
     private static final String LOGIN_CHECK = "loginCheck";
 
 
-
-
     public Map<String, String> signInOrUp(String email, String deviceInfo) {
 
         User user = userService.findByEmail(email).orElse(User.create(email, deviceInfo));
@@ -49,10 +47,10 @@ public class UserAppService {
             }
 
             return message;
+
         } else {
 
             Map<String, String> authTokens = new HashMap<>();
-
 
             String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);
             String refreshToken = jwtUtil.generateRefreshToken(user);

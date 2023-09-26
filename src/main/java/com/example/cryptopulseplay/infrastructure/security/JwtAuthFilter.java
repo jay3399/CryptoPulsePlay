@@ -28,9 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             try {
 
-
                 boolean b = jwtUtil.validateToken(token);
-
 
                 filterChain.doFilter(request, response);
 
