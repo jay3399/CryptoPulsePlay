@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   submitButton.addEventListener("click", async () => {
     const email = emailInput.value;
-    const deviceInfo = "your-device-info-here"; // 장치 정보를 여기에 입력하세요.
+    const deviceInfo = "device";
 
     try {
       const response = await fetch("/signIn", {
