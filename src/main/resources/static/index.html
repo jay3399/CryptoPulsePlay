@@ -63,19 +63,23 @@
 
 
     submitButton.addEventListener("click", async () => {
-      const email = emailInput.value;
-      console.log(email);
-      const deviceInfo = "your-device-info-here";
+      const userEmail = emailInput.value;
 
+      const deviceInfo = {
+        browser: navigator.userAgent,
+        platform: navigator.platform
+      };
 
       try {
         const response = await fetch("/signIn", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "DeviceInfo": deviceInfo,
           },
-          body: JSON.stringify({ email })
+          body: JSON.stringify({
+            email: userEmail,
+            deviceInfo: deviceInfo
+          })
         });
 
         const data = await response.json();
@@ -87,6 +91,7 @@
           verifyButton.style.display = "block";
 
         } else {
+
           jwtToken = data.loginToken;
           localStorage.setItem('loginToken', jwtToken);
 

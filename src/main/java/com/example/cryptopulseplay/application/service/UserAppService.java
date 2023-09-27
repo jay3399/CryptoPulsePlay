@@ -4,6 +4,7 @@ import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.shared.service.EmailService;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
+import com.example.cryptopulseplay.domian.user.model.User.DeviceInfo;
 import com.example.cryptopulseplay.domian.user.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,48 +25,61 @@ public class UserAppService {
     private static final String LOGIN_CHECK = "loginCheck";
 
 
-    public Map<String, String> signInOrUp(String email, String deviceInfo) {
+    public Map<String, String> signInOrUp(String email, DeviceInfo deviceInfo) {
 
         User user = userService.findByEmail(email).orElse(User.create(email, deviceInfo));
 
-        redisUtil.setUserByEmail(email, user);
+        redisUtil.setUserByEmail(user);
 
-        Map<String, String> message = new HashMap<>();
+        // 이메일 입력후 , 제출시 서버에서 판단후
+        // 1.신규회원인지
+        // 2.혹은 기존회원이지만 다른기기로이거나 , 이메일 인증기간이 특정시점을 넘어간 회원인지.
+        // 둘을 구분해서 , 메세지로 출력.
 
         if (user.isReauthenticate(deviceInfo)) {
-
-            String token = jwtUtil.generateToken(email, EMAIL_CHECK);
-
-            redisUtil.setTokenByEmail(token, email);
-
-            emailService.sendVerificationEmail(email, token);
-
-            if (!user.isEmailVerified()) {
-                message.put("message", "환영합니다 , 가입인증 메일을 전송하였습다 인증을 완료해주세요");
-            } else {
-                message.put("message", "로그인 인증 메일을 보냈습니다 확인해주세요");
-            }
-
-            return message;
-
+            return sendEmailForVerification(user);
+            // 인증자체가 필요없는경우 , 기기도 유효하고 신규회원도 아닌경우
         } else {
-
-            Map<String, String> authTokens = new HashMap<>();
-
-            String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);
-            String refreshToken = jwtUtil.generateRefreshToken(user);
-
-            user.setRefreshToken(refreshToken);
-
-            userService.save(user);
-
-            authTokens.put("loginToken", loginToken);
-            authTokens.put("refreshToken", refreshToken);
-
-            return authTokens;
+            return generateAuthToken(user);
         }
 
 
+    }
+
+    private Map<String, String> generateAuthToken(User user) {
+
+        Map<String, String> authTokens = new HashMap<>();
+
+        String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
+
+        user.setRefreshToken(refreshToken);
+
+        userService.save(user);
+
+        authTokens.put("loginToken", loginToken);
+        authTokens.put("refreshToken", refreshToken);
+
+        return authTokens;
+    }
+
+    private Map<String, String> sendEmailForVerification(User user) {
+
+        Map<String, String> message = new HashMap<>();
+
+        String token = jwtUtil.generateToken(user.getEmail(), EMAIL_CHECK);
+
+        redisUtil.setTokenByEmail(token, user.getEmail());
+
+        emailService.sendVerificationEmail(user.getEmail(), token);
+
+        if (!user.isEmailVerified()) {
+            message.put("message", "환영합니다 , 가입인증 메일을 전송하였습다 인증을 완료해주세요");
+        } else {
+            message.put("message", "로그인 인증 메일을 보냈습니다 확인해주세요");
+        }
+
+        return message;
     }
 
 

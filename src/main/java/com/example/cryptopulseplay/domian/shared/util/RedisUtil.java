@@ -13,9 +13,9 @@ public class RedisUtil {
 
     private static final String USER_KEY = "user:";
 
-    public void setUserByEmail(String email, User user) {
+    public void setUserByEmail(User user) {
 
-        redisTemplate.opsForValue().set(getUserKey(email), user);
+        redisTemplate.opsForValue().set(getUserKey(user.getEmail()), user);
     }
 
     public void setTokenByEmail(String token, String email) {

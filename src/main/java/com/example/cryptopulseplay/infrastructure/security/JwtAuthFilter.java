@@ -30,11 +30,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 boolean b = jwtUtil.validateToken(token);
 
+                System.out.println("b = " + b);
+
                 filterChain.doFilter(request, response);
 
             } catch (JwtException e) {
 
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
                 return;
             }
         }

@@ -1,8 +1,10 @@
 package com.example.cryptopulseplay.application.controller;
 
-import com.example.cryptopulseplay.application.request.EmailValidRequest;
+import com.example.cryptopulseplay.application.request.SignInRequest;
+import com.example.cryptopulseplay.application.request.SignInRequest.DeviceInfo;
 import com.example.cryptopulseplay.application.service.UserAppService;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
+import com.example.cryptopulseplay.domian.user.model.User;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,12 +27,17 @@ public class UserController {
 
     @PostMapping("/signIn")
     public ResponseEntity<Map<String, String>> signInOrUp(
-            @Valid @RequestBody EmailValidRequest emailValidRequest,
-            @RequestHeader("DeviceInfo") String device) {
+            @Valid @RequestBody SignInRequest signInRequest) {
 
-        String email = emailValidRequest.getEmail();
+        String email = signInRequest.getEmail();
+        System.out.println("email = " + email);
+        DeviceInfo deviceInfo = signInRequest.getDeviceInfo();
+        System.out.println("deviceInfo = " + deviceInfo.getPlatform());
+        System.out.println("deviceInfo.getBrowser( = " + deviceInfo.getBrowser());
 
-        Map<String, String> tokens = userAppService.signInOrUp(email, device);
+        User.DeviceInfo userDeviceInfo = new User.DeviceInfo(deviceInfo.getBrowser(), deviceInfo.getPlatform());
+
+        Map<String, String> tokens = userAppService.signInOrUp(email, userDeviceInfo);
 
         return ResponseEntity.ok(tokens);
     }

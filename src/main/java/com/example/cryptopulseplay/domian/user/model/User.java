@@ -1,6 +1,8 @@
 package com.example.cryptopulseplay.domian.user.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,7 +12,9 @@ import jakarta.persistence.Id;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -22,10 +26,11 @@ public class User implements Serializable {
 
     @Column(unique = true , nullable = false)
     private String email;
-    private String deviceInfo;
+
+    @Embedded
+    private DeviceInfo deviceInfo;
     private LocalDateTime emailVerificationDate;
     private int point = 0;
-
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
     private boolean emailVerified = false;
@@ -33,7 +38,7 @@ public class User implements Serializable {
 
     private static final long VERIFICATION_EXPIRATION_HOURS = 24;
 
-    public boolean isReauthenticate(String deviceInfo) {
+    public boolean isReauthenticate(DeviceInfo deviceInfo) {
 
         if (!this.isEmailVerified()) {
             return true;
@@ -51,12 +56,10 @@ public class User implements Serializable {
 
     }
 
-    public boolean isNewDevice(String deviceInfo) {
+    public boolean isNewDevice(DeviceInfo deviceInfo) {
 
-        if (deviceInfo != null && deviceInfo.equals(this.deviceInfo)) {
-            return false;
-        }
-        return true;
+        return !this.deviceInfo.equals(deviceInfo);
+
     }
 
     public  boolean isLongtime() {
@@ -89,7 +92,18 @@ public class User implements Serializable {
     }
 
 
-    public static User create(String email , String deviceInfo) {
+    @Embeddable
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DeviceInfo implements Serializable{
+
+        private String browser;
+        private String platform;
+
+
+    }
+
+    public static User create(String email , DeviceInfo deviceInfo) {
         User user = new User();
         user.email = email;
         user.deviceInfo = deviceInfo;
