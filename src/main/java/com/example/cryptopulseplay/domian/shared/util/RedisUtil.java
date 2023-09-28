@@ -1,6 +1,7 @@
 package com.example.cryptopulseplay.domian.shared.util;
 
 import com.example.cryptopulseplay.domian.user.model.User;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class RedisUtil {
 
     public void setTokenByEmail(String token, String email) {
 
-        redisTemplate.opsForValue().set(token, email);
+        redisTemplate.opsForValue().set(token, email, Duration.ofMinutes(10));
 
     }
 

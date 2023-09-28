@@ -2,6 +2,7 @@ package com.example.cryptopulseplay.application.controller;
 
 import com.example.cryptopulseplay.application.request.SignInRequest;
 import com.example.cryptopulseplay.application.request.SignInRequest.DeviceInfo;
+import com.example.cryptopulseplay.application.request.SignInResponse;
 import com.example.cryptopulseplay.application.service.UserAppService;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
@@ -26,21 +27,20 @@ public class UserController {
 
 
     @PostMapping("/signIn")
-    public ResponseEntity<Map<String, String>> signInOrUp(
-            @Valid @RequestBody SignInRequest signInRequest) {
+    public ResponseEntity<?> signInOrUp(@Valid @RequestBody SignInRequest signInRequest) {
 
         String email = signInRequest.getEmail();
-        System.out.println("email = " + email);
         DeviceInfo deviceInfo = signInRequest.getDeviceInfo();
-        System.out.println("deviceInfo = " + deviceInfo.getPlatform());
-        System.out.println("deviceInfo.getBrowser( = " + deviceInfo.getBrowser());
 
-        User.DeviceInfo userDeviceInfo = new User.DeviceInfo(deviceInfo.getBrowser(), deviceInfo.getPlatform());
+        // 캡슐화 ++ 도메인 중심 . 상태 노출x getter x
+        User.DeviceInfo userDeviceInfo = deviceInfo.toDomain();
 
-        Map<String, String> tokens = userAppService.signInOrUp(email, userDeviceInfo);
+        SignInResponse signInResponse = userAppService.signInOrUp(email, userDeviceInfo);
 
-        return ResponseEntity.ok(tokens);
+        return signInResponse.createResponse();
     }
+
+    // User.DeviceInfo userDeviceInfo = new User.DeviceInfo(deviceInfo.getBrowser(), deviceInfo.getPlatform());
 
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {

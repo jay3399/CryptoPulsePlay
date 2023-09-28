@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,23 +41,12 @@ public class User implements Serializable {
 
     public boolean isReauthenticate(DeviceInfo deviceInfo) {
 
-        if (!this.isEmailVerified()) {
-            return true;
-        }
-
-        if (isNewDevice(deviceInfo)) {
-            return true;
-        }
-
-        if (isLongtime()) {
-            return true;
-        }
-
-        return false;
+        return !this.isEmailVerified() || isNewDevice(deviceInfo) || isLongtime();
 
     }
 
     public boolean isNewDevice(DeviceInfo deviceInfo) {
+
 
         return !this.deviceInfo.equals(deviceInfo);
 
@@ -95,11 +85,10 @@ public class User implements Serializable {
     @Embeddable
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class DeviceInfo implements Serializable{
-
         private String browser;
         private String platform;
-
 
     }
 

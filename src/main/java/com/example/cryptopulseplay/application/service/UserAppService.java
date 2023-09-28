@@ -1,5 +1,8 @@
 package com.example.cryptopulseplay.application.service;
 
+import com.example.cryptopulseplay.application.request.SignInResponse;
+import com.example.cryptopulseplay.application.request.TokenResponse;
+import com.example.cryptopulseplay.application.request.VerificationMessageResponse;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.shared.service.EmailService;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
@@ -21,11 +24,10 @@ public class UserAppService {
     private final RedisUtil redisUtil;
 
 
-    private static final String EMAIL_CHECK = "emailCheck";
     private static final String LOGIN_CHECK = "loginCheck";
 
 
-    public Map<String, String> signInOrUp(String email, DeviceInfo deviceInfo) {
+    public SignInResponse signInOrUp(String email, DeviceInfo deviceInfo) {
 
         User user = userService.findByEmail(email).orElse(User.create(email, deviceInfo));
 
@@ -37,49 +39,37 @@ public class UserAppService {
         // 둘을 구분해서 , 메세지로 출력.
 
         if (user.isReauthenticate(deviceInfo)) {
-            return sendEmailForVerification(user);
-            // 인증자체가 필요없는경우 , 기기도 유효하고 신규회원도 아닌경우
-        } else {
-            return generateAuthToken(user);
+            sendEmailForVerification(user);
+            return new VerificationMessageResponse();
         }
-
-
-    }
-
-    private Map<String, String> generateAuthToken(User user) {
-
-        Map<String, String> authTokens = new HashMap<>();
 
         String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);
         String refreshToken = jwtUtil.generateRefreshToken(user);
 
         user.setRefreshToken(refreshToken);
 
-        userService.save(user);
+        return new TokenResponse(loginToken, refreshToken);
 
-        authTokens.put("loginToken", loginToken);
-        authTokens.put("refreshToken", refreshToken);
-
-        return authTokens;
     }
 
-    private Map<String, String> sendEmailForVerification(User user) {
+//    private Map<String, String> generateAuthToken(User user) {
+//
+//        Map<String, String> authTokens = new HashMap<>();
+//
+//
+//        userService.save(user);
+//
+//        authTokens.put("loginToken", loginToken);
+//        authTokens.put("refreshToken", refreshToken);
+//
+//        return authTokens;
+//    }
 
-        Map<String, String> message = new HashMap<>();
+    private void sendEmailForVerification(User user) {
 
-        String token = jwtUtil.generateToken(user.getEmail(), EMAIL_CHECK);
+        emailService.sendVerificationEmail(user);
 
-        redisUtil.setTokenByEmail(token, user.getEmail());
 
-        emailService.sendVerificationEmail(user.getEmail(), token);
-
-        if (!user.isEmailVerified()) {
-            message.put("message", "환영합니다 , 가입인증 메일을 전송하였습다 인증을 완료해주세요");
-        } else {
-            message.put("message", "로그인 인증 메일을 보냈습니다 확인해주세요");
-        }
-
-        return message;
     }
 
 

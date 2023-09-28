@@ -6,11 +6,11 @@
 <body>
 
 <div id="loginPage">
-<h1>Login / Sign Up</h1>
-<input id="emailInput" type="email" placeholder="Enter your email">
-<button id="submitButton">Submit</button>
-<p id="message"></p>
-<button id="verifyButton" style="display:none;">Verify Email</button>
+  <h1>Login / Sign Up</h1>
+  <input id="emailInput" type="email" placeholder="Enter your email">
+  <button id="submitButton">Submit</button>
+  <p id="message"></p>
+  <button id="verifyButton" style="display:none;">Verify Email</button>
 </div>
 
 <div id="mainPage" style="display:none;">
@@ -20,16 +20,13 @@
 <script>
 
 
-  document.addEventListener("DOMContentLoaded",async () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     const emailInput = document.getElementById("emailInput");
     const submitButton = document.getElementById("submitButton");
     const messageElement = document.getElementById("message");
     const verifyButton = document.getElementById("verifyButton");
     const loginPage = document.getElementById("loginPage");
     const mainPage = document.getElementById("mainPage");
-
-
-
 
     let jwtToken = localStorage.getItem("loginToken");
 
@@ -50,8 +47,7 @@
         } else {
           alert("유효하지 않은 토큰입니다.");
           localStorage.removeItem("loginToken");
-          loginPage.style.display = "block";
-          mainPage.style.display = "none";
+          location.reload();
         }
       } catch (error) {
         console.log("error");
@@ -60,7 +56,6 @@
       loginPage.style.display = "block";
       mainPage.style.display = "none";
     }
-
 
     submitButton.addEventListener("click", async () => {
       const userEmail = emailInput.value;
@@ -94,6 +89,7 @@
 
           jwtToken = data.loginToken;
           localStorage.setItem('loginToken', jwtToken);
+          location.reload();
 
         }
       } catch (error) {
@@ -105,7 +101,7 @@
 
       const storedToken = localStorage.getItem("loginToken");
 
-      if(!storedToken){
+      if (!storedToken) {
         alert("이메일 인증을 완료해주세요");
         return;
       }
@@ -134,7 +130,6 @@
       }
     });
   });
-
 
 
 </script>

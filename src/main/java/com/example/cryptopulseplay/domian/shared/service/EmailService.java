@@ -1,10 +1,14 @@
 package com.example.cryptopulseplay.domian.shared.service;
 
+import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
+import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
+import com.example.cryptopulseplay.domian.user.model.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,17 +16,28 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
+    private final RedisUtil redisUtil;
+    private final JwtUtil jwtUtil;
+
     private static final String MAIL_ADDRESS = "josw90@naver.com";
+    private static final String EMAIL_CHECK = "emailCheck";
 
-    public void sendVerificationEmail(String email, String token) {
+    @Async
+    public void sendVerificationEmail(User user) {
 
+        // 이메일검증용 토큰
+        String token = jwtUtil.generateToken(user.getEmail(), EMAIL_CHECK);
+
+        // 토큰값 매칭 이메일 레디스에 저장 .
+
+        redisUtil.setTokenByEmail(token, user.getEmail());
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
         try {
-            helper.setTo(email);
+            helper.setTo(user.getEmail());
             helper.setFrom(MAIL_ADDRESS);
             helper.setSubject("이메일 인증을 완료해주세요");
 
@@ -36,7 +51,7 @@ public class EmailService {
 
             javaMailSender.send(mimeMessage);
 
-            System.out.println("email = " + email);
+            System.out.println("email = " + user.getEmail());
 
         } catch (MessagingException e) {
 
@@ -45,9 +60,7 @@ public class EmailService {
         }
 
 
-
     }
-
 
 //    public String verifyEmail(String token) {
 //
@@ -73,11 +86,9 @@ public class EmailService {
 //
 //    }
 
-
 //    private final UserRepository userRepository;
 //    private final JwtUtil jwtUtil;
 //    private final RedisTemplate redisTemplate;
-
 
 
 }
