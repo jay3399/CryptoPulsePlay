@@ -1,5 +1,6 @@
 package com.example.cryptopulseplay.domian.user.service;
 
+import com.example.cryptopulseplay.application.exception.custom.MailVerificationException;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
@@ -40,15 +41,12 @@ public class UserService {
 
         String emailInRedis = redisUtil.getEmail(token);
 
-        if (emailInRedis == null || !email.equals(email)) {
-            return null;
-            //예외처리
+        if (!email.equals(emailInRedis)) {
+            throw new MailVerificationException();
         }
 
         if (!user.isEmailVerified()) {
-
             user.markEmailAsVerified(jwtUtil.generateRefreshToken(user));
-
             userRepository.save(user);
         }
 

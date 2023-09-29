@@ -1,11 +1,13 @@
 package com.example.cryptopulseplay.domian.shared.service;
 
+import com.example.cryptopulseplay.application.exception.custom.MailSenderException;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -22,6 +24,11 @@ public class EmailService {
     private static final String MAIL_ADDRESS = "josw90@naver.com";
     private static final String EMAIL_CHECK = "emailCheck";
 
+
+    /**
+     * MailException -> 스프링 JavaMail 의 최상위 예외  -> javaMailSender MessagingException -> JavaMail API
+     * 발생예외 , 메세지 작성 및 전송중 발생 0 -> MimeMessageHelper
+     */
     @Async
     public void sendVerificationEmail(User user) {
 
@@ -54,9 +61,9 @@ public class EmailService {
             System.out.println("email = " + user.getEmail());
 
         } catch (MessagingException e) {
-
-            System.out.println("오류");
-
+            throw new MailSenderException("message create failed", e);
+        } catch (MailException e) {
+            throw new MailSenderException("mail sending failed", e);
         }
 
 

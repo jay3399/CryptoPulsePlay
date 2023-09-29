@@ -1,4 +1,4 @@
-package com.example.cryptopulseplay.application.request;
+package com.example.cryptopulseplay.application.ui.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

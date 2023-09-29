@@ -1,4 +1,4 @@
-package com.example.cryptopulseplay.application.request;
+package com.example.cryptopulseplay.application.ui.response;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,11 +7,9 @@ import org.springframework.http.ResponseEntity;
 public class TokenResponse implements SignInResponse {
 
     private final String loginToken;
-    private final String refreshToken;
 
-    public TokenResponse(String loginToken, String refreshToken) {
+    public TokenResponse(String loginToken) {
         this.loginToken = loginToken;
-        this.refreshToken = refreshToken;
     }
 
     @Override
@@ -20,7 +18,6 @@ public class TokenResponse implements SignInResponse {
         Map<String, String> tokens = new HashMap<>();
 
         tokens.put("loginToken", loginToken);
-        tokens.put("refreshToken", refreshToken);
 
         return ResponseEntity.ok(tokens);
 

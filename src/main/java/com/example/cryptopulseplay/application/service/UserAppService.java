@@ -1,16 +1,14 @@
 package com.example.cryptopulseplay.application.service;
 
-import com.example.cryptopulseplay.application.request.SignInResponse;
-import com.example.cryptopulseplay.application.request.TokenResponse;
-import com.example.cryptopulseplay.application.request.VerificationMessageResponse;
+import com.example.cryptopulseplay.application.ui.response.SignInResponse;
+import com.example.cryptopulseplay.application.ui.response.TokenResponse;
+import com.example.cryptopulseplay.application.ui.response.VerificationMessageResponse;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.shared.service.EmailService;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
 import com.example.cryptopulseplay.domian.user.model.User.DeviceInfo;
 import com.example.cryptopulseplay.domian.user.service.UserService;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,37 +37,26 @@ public class UserAppService {
         // 둘을 구분해서 , 메세지로 출력.
 
         if (user.isReauthenticate(deviceInfo)) {
-            sendEmailForVerification(user);
-            return new VerificationMessageResponse();
+
+            emailService.sendVerificationEmail(user);
+
+            return new VerificationMessageResponse(user);
         }
 
+        // 인증자체가 필요없는경우 , 기기도 유효하고 신규회원도 아닌경우
         String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);
-        String refreshToken = jwtUtil.generateRefreshToken(user);
 
-        user.setRefreshToken(refreshToken);
+        generateRefreshToken(user);
 
-        return new TokenResponse(loginToken, refreshToken);
+        return new TokenResponse(loginToken);
+
 
     }
 
-//    private Map<String, String> generateAuthToken(User user) {
-//
-//        Map<String, String> authTokens = new HashMap<>();
-//
-//
-//        userService.save(user);
-//
-//        authTokens.put("loginToken", loginToken);
-//        authTokens.put("refreshToken", refreshToken);
-//
-//        return authTokens;
-//    }
-
-    private void sendEmailForVerification(User user) {
-
-        emailService.sendVerificationEmail(user);
-
-
+    private void generateRefreshToken(User user) {
+        String refreshToken = jwtUtil.generateRefreshToken(user);
+        user.setRefreshToken(refreshToken);
+        userService.save(user);
     }
 
 
@@ -96,6 +83,7 @@ public class UserAppService {
     }
 
     // -> User 클래스로 , 객체 자신의 상태를 스스로 판단하고 관리.객체가 하나의 목적 역할에 집중, 응집도 ++
+
 //    private boolean isReauthenticate(User user, String deviceInfo) {
 //
 //        if (!user.isEmailVerified()) {
@@ -141,6 +129,37 @@ public class UserAppService {
 //        return false;
 //
 //    }
+
+    // 아래처럼 메서드로 쓰지말고 메세지 , 토큰생성 response를 만든뒤 , 그내 내부에서 해당로직실행.
+
+//    private Map<String, String> generateAuthToken(User user) {
+//
+//        Map<String, String> authTokens = new HashMap<>();
+//
+//        user.setRefreshToken(refreshToken);
+//
+//        userService.save(user);
+//
+//        authTokens.put("loginToken", loginToken);
+//
+//        return authTokens;
+//    }
+//
+//    private Map<String, String> sendEmailForVerification(User user) {
+//
+//        emailService.sendVerificationEmail(user);
+//
+//        Map<String, String> message = new HashMap<>();
+//
+//        if (!user.isEmailVerified()) {
+//            message.put("message", "환영합니다 , 가입인증 메일을 전송하였습다 인증을 완료해주세요");
+//        } else {
+//            message.put("message", "로그인 인증 메일을 보냈습니다 확인해주세요");
+//        }
+//
+//        return message;
+//    }
+
 //
 //
 

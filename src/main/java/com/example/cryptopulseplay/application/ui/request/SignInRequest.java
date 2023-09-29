@@ -1,4 +1,4 @@
-package com.example.cryptopulseplay.application.request;
+package com.example.cryptopulseplay.application.ui.request;
 
 import com.example.cryptopulseplay.domian.user.model.User;
 import com.example.cryptopulseplay.domian.user.model.User.DeviceInfo;

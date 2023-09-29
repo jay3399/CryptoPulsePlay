@@ -1,13 +1,12 @@
-package com.example.cryptopulseplay.application.controller;
+package com.example.cryptopulseplay.application.ui.controller;
 
-import com.example.cryptopulseplay.application.request.SignInRequest;
-import com.example.cryptopulseplay.application.request.SignInRequest.DeviceInfo;
-import com.example.cryptopulseplay.application.request.SignInResponse;
+import com.example.cryptopulseplay.application.ui.request.SignInRequest;
+import com.example.cryptopulseplay.application.ui.request.SignInRequest.DeviceInfo;
+import com.example.cryptopulseplay.application.ui.response.SignInResponse;
 import com.example.cryptopulseplay.application.service.UserAppService;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
 import jakarta.validation.Valid;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,17 +29,18 @@ public class UserController {
     public ResponseEntity<?> signInOrUp(@Valid @RequestBody SignInRequest signInRequest) {
 
         String email = signInRequest.getEmail();
+
         DeviceInfo deviceInfo = signInRequest.getDeviceInfo();
 
         // 캡슐화 ++ 도메인 중심 . 상태 노출x getter x
         User.DeviceInfo userDeviceInfo = deviceInfo.toDomain();
 
+//        User.DeviceInfo userDeviceInfo = new User.DeviceInfo(deviceInfo.getBrowser(), deviceInfo.getPlatform());
+
         SignInResponse signInResponse = userAppService.signInOrUp(email, userDeviceInfo);
 
         return signInResponse.createResponse();
     }
-
-    // User.DeviceInfo userDeviceInfo = new User.DeviceInfo(deviceInfo.getBrowser(), deviceInfo.getPlatform());
 
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {

@@ -1,5 +1,6 @@
 package com.example.cryptopulseplay.domian.shared.util;
 
+import com.example.cryptopulseplay.application.exception.custom.RedisKeyNotFoundException;
 import com.example.cryptopulseplay.domian.user.model.User;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +26,28 @@ public class RedisUtil {
 
     }
 
+
     public User getUser(String email) {
 
-        return (User) redisTemplate.opsForValue().getAndDelete(getUserKey(email));
+        User user = (User) redisTemplate.opsForValue().get(email);
+
+        if (user == null) {
+            throw new RedisKeyNotFoundException(email);
+        }
+
+        return user;
 
     }
 
     public String getEmail(String token) {
-        return (String) redisTemplate.opsForValue().getAndDelete(token);
+
+        String email = (String) redisTemplate.opsForValue().get(token);
+
+        if (email == null) {
+            throw new RedisKeyNotFoundException(token);
+        }
+
+        return email;
     }
 
 
