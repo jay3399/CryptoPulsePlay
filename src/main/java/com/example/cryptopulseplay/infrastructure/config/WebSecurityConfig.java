@@ -23,7 +23,7 @@ public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/" , "/index.html" ,"/verifyLoginToken");
+    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/" , "/index.html" ,"/verifyLoginToken" ,"/btc-price");
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

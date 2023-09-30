@@ -29,7 +29,7 @@ public class RedisUtil {
 
     public User getUser(String email) {
 
-        User user = (User) redisTemplate.opsForValue().get(email);
+        User user = (User) redisTemplate.opsForValue().get(getUserKey(email));
 
         if (user == null) {
             throw new RedisKeyNotFoundException(email);

@@ -15,9 +15,12 @@
 
 <div id="mainPage" style="display:none;">
   <h1>환영합니다</h1>
+  <p id="btcPrice">비트코인 가격: 로딩 중...</p>
 </div>
 
 <script>
+
+
 
 
   document.addEventListener("DOMContentLoaded", async () => {
@@ -129,9 +132,29 @@
         console.log("error");
       }
     });
+
+    const btcPriceElement = document.getElementById("btcPrice");
+    const eventSource = new EventSource('/btc-price');
+
+
+    eventSource.onmessage = function (event) {
+      const btcPrice = JSON.parse(event.data);
+      btcPriceElement.textContent = `현재 비트코인 가격 : $${btcPrice.price.toFixed(2)}`;
+    }
+
+    eventSource.onerror = function (error) {
+      console.error("error", error);
+      btcPriceElement.textContent = "비트코인 가격 로딩실패";
+      eventSource.close();
+    };
+
+
+
+
+
+
   });
-
-
 </script>
+
 </body>
 </html>
