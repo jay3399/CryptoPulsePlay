@@ -9,6 +9,8 @@ import io.jsonwebtoken.JwtException;
 import io.lettuce.core.RedisConnectionException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +20,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
  * 필요예외 -
- *
- * 디비 , 제약조건 위반 o  , null
- * 레디스 ,연결  , null o
- * 컨트롤러 검증 , valid x
- * 이메일요청 o
- * 이메일 검증 o
- * jwt o
- *
+ * <p>
+ * 디비 , 제약조건 위반 o  , null 레디스 ,연결  , null o 컨트롤러 검증 , valid x 이메일요청 o 이메일 검증 o jwt o SSE : 연결 , 타임아웃
+ * .
  */
 
 @ControllerAdvice
@@ -41,8 +38,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RedisConnectionException.class)
-    public ResponseEntity<ErrorResponse> handleRedisConnectionException(RedisConnectionException e) {
-        String message ="Redis connection error";
+    public ResponseEntity<ErrorResponse> handleRedisConnectionException(
+            RedisConnectionException e) {
+        String message = "Redis connection error";
         log.error(message, e);
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
@@ -68,13 +66,25 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
 
+    @ExceptionHandler(TimeoutException.class)
+    public ResponseEntity<ErrorResponse> handleTimeout(TimeoutException e) {
+        String message = "SSE connection timeout";
+        log.error(message);
+        return createErrorResponse(HttpStatus.REQUEST_TIMEOUT, message);
+    }
 
-
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorResponse> handleIOException(IOException e) {
+        String message = "IO Exception";
+        log.error(message);
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
+    }
 
     // Custom Error --------------------------------------------------------------------------------
 
     @ExceptionHandler(RedisKeyNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleRedisKeyNotFoundException(RedisKeyNotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleRedisKeyNotFoundException(
+            RedisKeyNotFoundException e) {
 
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }

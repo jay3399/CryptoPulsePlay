@@ -45,6 +45,23 @@
         // const data = await response.json();
 
         if (response.ok) {
+
+          const btcPriceElement = document.getElementById("btcPrice");
+          const eventSource = new EventSource('/btc-price');
+
+
+          eventSource.onmessage = function (event) {
+            const btcPrice = JSON.parse(event.data);
+            btcPriceElement.textContent = `현재 비트코인 가격 : $${btcPrice.price.toFixed(2)}`;
+          }
+
+          eventSource.onerror = function (error) {
+            console.error("error", error);
+            btcPriceElement.textContent = "비트코인 가격 로딩실패";
+            eventSource.close();
+          };
+
+
           loginPage.style.display = "none";
           mainPage.style.display = "block";
         } else {
@@ -133,20 +150,20 @@
       }
     });
 
-    const btcPriceElement = document.getElementById("btcPrice");
-    const eventSource = new EventSource('/btc-price');
-
-
-    eventSource.onmessage = function (event) {
-      const btcPrice = JSON.parse(event.data);
-      btcPriceElement.textContent = `현재 비트코인 가격 : $${btcPrice.price.toFixed(2)}`;
-    }
-
-    eventSource.onerror = function (error) {
-      console.error("error", error);
-      btcPriceElement.textContent = "비트코인 가격 로딩실패";
-      eventSource.close();
-    };
+    // const btcPriceElement = document.getElementById("btcPrice");
+    // const eventSource = new EventSource('/btc-price');
+    //
+    //
+    // eventSource.onmessage = function (event) {
+    //   const btcPrice = JSON.parse(event.data);
+    //   btcPriceElement.textContent = `현재 비트코인 가격 : $${btcPrice.price.toFixed(2)}`;
+    // }
+    //
+    // eventSource.onerror = function (error) {
+    //   console.error("error", error);
+    //   btcPriceElement.textContent = "비트코인 가격 로딩실패";
+    //   eventSource.close();
+    // };
 
 
 

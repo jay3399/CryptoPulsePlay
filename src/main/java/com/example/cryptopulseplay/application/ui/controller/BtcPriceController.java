@@ -26,11 +26,9 @@ public class BtcPriceController {
     @GetMapping(value = "/btc-price" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<BitcoinPrice> getBtcPrice() {
 
-        return Flux.interval(Duration.ofSeconds(5)).flatMap(s -> btcPriceService.getCurrentPrice());
+        return Flux.interval(Duration.ofSeconds(30)).flatMap(s -> btcPriceService.getCurrentPrice());
 
     }
-
-
 
 
 
