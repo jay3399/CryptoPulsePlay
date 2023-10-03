@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 public class Game {
@@ -20,7 +20,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Date timeStamp;
+    private LocalDateTime timeStamp;
 
     private int amount;
 
@@ -28,11 +28,37 @@ public class Game {
     private Direction direction;
 
     @Enumerated(value = EnumType.STRING)
-    private Outcome outcome;
+    private Outcome outcome = Outcome.PENDING;
 
     @JoinColumn(name = "userId")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    public void setUser(User user) {
+        this.user = user;
+        user.getGames().add(this);
+    }
+
+
+    public void setGame(int amount, Direction direction) {
+        this.timeStamp = LocalDateTime.now();
+        this.amount = amount;
+        this.direction = direction;
+    }
+
+    public static Game createGame(User user, int amount, Direction direction) {
+
+        Game game = new Game();
+        game.setGame(amount, direction);
+        game.setUser(user);
+
+        return game;
+
+    }
+
+
+
+
 
 
 }

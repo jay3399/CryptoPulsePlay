@@ -1,6 +1,6 @@
 package com.example.cryptopulseplay.infrastructure.config;
 
-import com.example.cryptopulseplay.infrastructure.security.SseConnectionInterceptor;
+import com.example.cryptopulseplay.infrastructure.security.connectionlimit.SseConnectionInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

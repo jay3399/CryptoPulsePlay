@@ -1,4 +1,4 @@
-package com.example.cryptopulseplay.infrastructure.security;
+package com.example.cryptopulseplay.infrastructure.security.connectionlimit;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,18 +19,19 @@ public class SseConnectionInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) throws Exception {
 
-        if ("/btc-price".equals(request.getRequestURI())
-                && connectionCounter.getCount() >= MEX_CON) {
+        if ("/btc-price".equals(request.getRequestURI()) && connectionCounter.getCount() >= MEX_CON) {
 
             System.out.println("Con MAX");
             response.setStatus(HttpStatus.SERVICE_UNAVAILABLE.value());
             return false;
         }
+
         if ("/btc-price".equals(request.getRequestURI())) {
             System.out.println("CON");
             connectionCounter.increment();
             System.out.println("connectionCounter = " + connectionCounter.getCount());
         }
+
         return true;
     }
 

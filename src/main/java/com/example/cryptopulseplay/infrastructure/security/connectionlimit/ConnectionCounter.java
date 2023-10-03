@@ -1,4 +1,4 @@
-package com.example.cryptopulseplay.infrastructure.security;
+package com.example.cryptopulseplay.infrastructure.security.connectionlimit;
 
 
 import java.util.concurrent.atomic.AtomicInteger;

@@ -1,5 +1,7 @@
 package com.example.cryptopulseplay.domian.user.model;
 
+import com.example.cryptopulseplay.domian.game.model.Game;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -9,9 +11,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -36,6 +41,9 @@ public class User implements Serializable {
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
     private boolean emailVerified = false;
     private String refreshToken;
+
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    private List<Game> games = new ArrayList<>();
 
     private static final long VERIFICATION_EXPIRATION_HOURS = 24;
 
@@ -90,6 +98,19 @@ public class User implements Serializable {
         private String browser;
         private String platform;
 
+    }
+
+    public void playGame(int amount) {
+        validateSufficientPoints(amount);
+        this.point -= amount;
+    }
+
+    private void validateSufficientPoints(int amount) {
+        if (this.point < amount) {
+
+            //예외
+
+        }
     }
 
     public static User create(String email , DeviceInfo deviceInfo) {

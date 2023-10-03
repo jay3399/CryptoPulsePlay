@@ -52,7 +52,7 @@
     - deviceInformation : VARCHAR
     - accountStatus : String
     - refreshToken : String
-2. **Bet**
+2. **Game**
     - id: PK
     - user_id: FK
     - timestamp : DATETIME
@@ -68,7 +68,7 @@
     - timestamp : DATETIME
     - price : FLOAT
     - direction : ENUM('UP', 'DOWN')
-5. **Payout**
+5. **Reword**
     - id : PK
     - user_id : FK
     - bet_id : FK
