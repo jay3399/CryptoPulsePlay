@@ -1,5 +1,6 @@
 package com.example.cryptopulseplay.domian.user.model;
 
+import com.example.cryptopulseplay.application.exception.custom.InsufficientPointsException;
 import com.example.cryptopulseplay.domian.game.model.Game;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -100,6 +101,7 @@ public class User implements Serializable {
 
     }
 
+    // Dirty Checking ; 변경감지.
     public void playGame(int amount) {
         validateSufficientPoints(amount);
         this.point -= amount;
@@ -107,9 +109,7 @@ public class User implements Serializable {
 
     private void validateSufficientPoints(int amount) {
         if (this.point < amount) {
-
-            //예외
-
+            throw new InsufficientPointsException("Not enough point to play");
         }
     }
 

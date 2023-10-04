@@ -1,6 +1,12 @@
 package com.example.cryptopulseplay.domian.shared.util;
 
+import static com.example.cryptopulseplay.domian.shared.util.RedisKeyUtil.getGameKey;
+import static com.example.cryptopulseplay.domian.shared.util.RedisKeyUtil.getRecordKey;
+import static com.example.cryptopulseplay.domian.shared.util.RedisKeyUtil.getUserKey;
+
 import com.example.cryptopulseplay.application.exception.custom.RedisKeyNotFoundException;
+import com.example.cryptopulseplay.domian.game.model.Game;
+import com.example.cryptopulseplay.domian.pricerecord.model.PriceRecord;
 import com.example.cryptopulseplay.domian.user.model.User;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +19,8 @@ public class RedisUtil {
 
     public final RedisTemplate redisTemplate;
 
-    private static final String USER_KEY = "user:";
+    // login , verification -----------------------------------------------------------------------------------------------------------------------
+
 
     public void setUserByEmail(User user) {
 
@@ -50,11 +57,23 @@ public class RedisUtil {
         return email;
     }
 
+    // Game-----------------------------------------------------------------------------------------------------------------------
 
-    private static String getUserKey(String email) {
-        return USER_KEY + email;
+    // + 중복검사
+
+    public void setGameByUser(Long userId, Game game) {
+
+        redisTemplate.opsForValue().set(getGameKey(userId), game);
+
     }
 
+    public void setPriceRecord(PriceRecord priceRecord) {
+        redisTemplate.opsForValue().set(RedisKeyUtil.getRecordKey(), priceRecord);
+    }
+
+    public PriceRecord getPriceRecord() {
+        return  (PriceRecord) redisTemplate.opsForValue().get(RedisKeyUtil.getRecordKey());
+    }
 
 
 

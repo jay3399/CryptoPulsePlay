@@ -1,6 +1,7 @@
 package com.example.cryptopulseplay.application.exception;
 
 
+import com.example.cryptopulseplay.application.exception.custom.InsufficientPointsException;
 import com.example.cryptopulseplay.application.exception.custom.MailSenderException;
 import com.example.cryptopulseplay.application.exception.custom.MailVerificationException;
 import com.example.cryptopulseplay.application.exception.custom.RedisKeyNotFoundException;
@@ -99,6 +100,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MailSenderException.class)
     public ResponseEntity<ErrorResponse> handleMailSenderException(MailSenderException e) {
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(InsufficientPointsException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientPointsException(InsufficientPointsException e) {
+        return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+
     }
 
     private ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus status, String message) {
