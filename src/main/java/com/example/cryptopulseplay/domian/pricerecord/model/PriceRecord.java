@@ -9,8 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PriceRecord implements Serializable {
 
     @Id
@@ -24,7 +29,7 @@ public class PriceRecord implements Serializable {
     @Enumerated(EnumType.STRING)
     private Direction direction = Direction.PENDING;
 
-    public void set(Double startPrice) {
+    private PriceRecord(Double startPrice) {
         this.startPrice = startPrice;
         this.timeStamp = LocalDateTime.now();
     }
@@ -35,11 +40,7 @@ public class PriceRecord implements Serializable {
 
     public static PriceRecord create(Double startPrice) {
 
-        PriceRecord priceRecord = new PriceRecord();
-
-        priceRecord.set(startPrice);
-
-        return priceRecord;
+        return new PriceRecord(startPrice);
     }
 
 

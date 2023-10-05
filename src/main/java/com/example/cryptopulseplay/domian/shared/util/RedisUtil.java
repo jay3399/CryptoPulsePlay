@@ -1,7 +1,6 @@
 package com.example.cryptopulseplay.domian.shared.util;
 
 import static com.example.cryptopulseplay.domian.shared.util.RedisKeyUtil.getGameKey;
-import static com.example.cryptopulseplay.domian.shared.util.RedisKeyUtil.getRecordKey;
 import static com.example.cryptopulseplay.domian.shared.util.RedisKeyUtil.getUserKey;
 
 import com.example.cryptopulseplay.application.exception.custom.RedisKeyNotFoundException;
@@ -9,6 +8,7 @@ import com.example.cryptopulseplay.domian.game.model.Game;
 import com.example.cryptopulseplay.domian.pricerecord.model.PriceRecord;
 import com.example.cryptopulseplay.domian.user.model.User;
 import java.time.Duration;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -63,8 +63,12 @@ public class RedisUtil {
 
     public void setGameByUser(Long userId, Game game) {
 
-        redisTemplate.opsForValue().set(getGameKey(userId), game);
+        redisTemplate.opsForValue().set(getGameKey(userId.toString()), game);
 
+    }
+
+    public Game getGame(String gameKey) {
+        return (Game) redisTemplate.opsForValue().getAndDelete(gameKey);
     }
 
     public void setPriceRecord(PriceRecord priceRecord) {
@@ -72,7 +76,18 @@ public class RedisUtil {
     }
 
     public PriceRecord getPriceRecord() {
-        return  (PriceRecord) redisTemplate.opsForValue().get(RedisKeyUtil.getRecordKey());
+        return  (PriceRecord) redisTemplate.opsForValue().getAndDelete(RedisKeyUtil.getRecordKey());
+    }
+
+    public Set<String> gameKeys() {
+        return redisTemplate.keys(RedisKeyUtil.getGameKey("*"));
+    }
+
+
+    public void deleteGame(String gameKey) {
+
+        redisTemplate.delete(gameKey);
+
     }
 
 

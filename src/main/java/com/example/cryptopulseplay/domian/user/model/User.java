@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,6 +26,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User implements Serializable {
 
     @Id
@@ -45,6 +47,11 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
     private List<Game> games = new ArrayList<>();
+
+    private User(String email, DeviceInfo deviceInfo) {
+        this.email = email;
+        this.deviceInfo = deviceInfo;
+    }
 
     private static final long VERIFICATION_EXPIRATION_HOURS = 24;
 
@@ -107,6 +114,12 @@ public class User implements Serializable {
         this.point -= amount;
     }
 
+    public void updatePoints(int point) {
+
+        this.point += point;
+
+    }
+
     private void validateSufficientPoints(int amount) {
         if (this.point < amount) {
             throw new InsufficientPointsException("Not enough point to play");
@@ -114,10 +127,7 @@ public class User implements Serializable {
     }
 
     public static User create(String email , DeviceInfo deviceInfo) {
-        User user = new User();
-        user.email = email;
-        user.deviceInfo = deviceInfo;
-        return user;
+        return new User(email, deviceInfo);
     }
 
 

@@ -13,8 +13,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game implements Serializable {
 
     @Id
@@ -41,19 +46,26 @@ public class Game implements Serializable {
     }
 
 
-    public void setGame(int amount, Direction direction) {
+    private Game(User user ,int amount, Direction predictedDirection) {
         this.timeStamp = LocalDateTime.now();
         this.amount = amount;
-        this.direction = direction;
+        this.direction = predictedDirection;
+        setUser(user);
     }
+
+    public void calculateOutcome(Direction actualDirection) {
+        if (direction == actualDirection) {
+            this.outcome = Outcome.WON;
+        } else {
+            this.outcome = Outcome.LOST;
+        }
+    }
+
+
 
     public static Game createGame(User user, int amount, Direction direction) {
 
-        Game game = new Game();
-        game.setGame(amount, direction);
-        game.setUser(user);
-
-        return game;
+        return new Game(user, amount, direction);
 
     }
 

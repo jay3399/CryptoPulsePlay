@@ -2,6 +2,7 @@ package com.example.cryptopulseplay.domian.pricerecord.service;
 
 import com.example.cryptopulseplay.domian.pricerecord.model.PriceRecord;
 import com.example.cryptopulseplay.domian.pricerecord.repository.PriceRecordRepository;
+import com.example.cryptopulseplay.domian.shared.enums.Direction;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class PriceRecordService {
     }
 
     @Transactional
-    public PriceRecord updatePriceRecord(Double endPrice) {
+    public Direction updatePriceRecord(Double endPrice) {
 
         PriceRecord priceRecord = redisUtil.getPriceRecord();
 
@@ -37,7 +38,8 @@ public class PriceRecordService {
 
         priceRecordRepository.save(priceRecord);
 
-        return priceRecord;
+        return priceRecord.getDirection();
+
     }
 
 

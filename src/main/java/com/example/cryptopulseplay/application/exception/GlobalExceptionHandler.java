@@ -33,9 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
-        String message = "Entity not found";
-        log.error(message, e);
-        return createErrorResponse(HttpStatus.NOT_FOUND, message);
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Entity not found");
     }
 
     @ExceptionHandler(RedisConnectionException.class)

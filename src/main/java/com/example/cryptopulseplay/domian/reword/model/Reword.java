@@ -1,6 +1,7 @@
 package com.example.cryptopulseplay.domian.reword.model;
 
 import com.example.cryptopulseplay.domian.game.model.Game;
+import com.example.cryptopulseplay.domian.game.model.Outcome;
 import com.example.cryptopulseplay.domian.user.model.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,8 +12,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class Reword {
 
     @Id
@@ -20,7 +25,7 @@ public class Reword {
     private Long id;
     private int amount;
     @Enumerated(EnumType.STRING)
-    private RewordStatus rewordStatus;
+    private RewordStatus rewordStatus = RewordStatus.PENDING;
 
 
     @JoinColumn(name = "userId")
@@ -30,6 +35,40 @@ public class Reword {
     @JoinColumn(name = "gameId")
     @ManyToOne(fetch = FetchType.LAZY)
     private Game game;
+
+
+    private Reword(Game game, Outcome outcome) {
+        this.game = game;
+        this.user = game.getUser();
+        calculateAmount(outcome, game.getAmount());
+
+    }
+
+    private void calculateAmount(Outcome outcome, int amount) {
+
+        if (outcome == Outcome.WON) {
+            this.amount = amount * 2;
+        } else {
+            this.amount = -amount;
+        }
+    }
+
+
+    public static Reword create(Game game, Outcome outcome) {
+
+        return new Reword(game, outcome);
+
+
+//        아래는 reword 의 상태를 변경한다. 상태를 변경하지말고 새로운 인스턴스를 반환하고 외부에서 생성자생성을 막는다.
+
+//        Reword reword = new Reword();
+//
+//        reword.set(game, outcome);
+//
+//        return reword;
+
+
+    }
 
 
 }
