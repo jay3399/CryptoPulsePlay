@@ -67,29 +67,29 @@ public class GameAppService {
         }
 
     }
-
-    // 임시 , 배치처리 고려 , 스트림.
-    @Transactional
-    public void payReword() {
-
-        List<Reword> rewords = rewordRepository.findAll();
-
-        for (Reword reword : rewords) {
-
-            if (reword.getRewordStatus() == RewordStatus.PENDING) {
-
-                User user = reword.getUser();
-                user.updatePoints(reword.getAmount());
-
-            }
-
-
-        }
-
-
-
-
-    }
+//
+//    // 임시 , 배치처리 고려 , 스트림.
+//    @Transactional
+//    public void payReword() {
+//
+//        List<Reword> rewords = rewordRepository.findAll();
+//
+//        for (Reword reword : rewords) {
+//
+//            if (reword.getRewordStatus() == RewordStatus.PENDING) {
+//
+//                User user = reword.getUser();
+//                user.updatePoints(reword.getAmount());
+//
+//            }
+//
+//
+//        }
+//
+//
+//
+//
+//    }
 
 
 }
