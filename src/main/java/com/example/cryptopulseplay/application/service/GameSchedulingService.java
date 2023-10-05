@@ -2,10 +2,7 @@ package com.example.cryptopulseplay.application.service;
 
 import com.example.cryptopulseplay.domian.btcprice.service.BtcPriceService;
 import com.example.cryptopulseplay.domian.pricerecord.service.PriceRecordService;
-import com.example.cryptopulseplay.domian.reword.model.Reword;
-import com.example.cryptopulseplay.domian.reword.repository.RewordRepository;
 import com.example.cryptopulseplay.domian.shared.enums.Direction;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
