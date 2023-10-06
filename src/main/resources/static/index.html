@@ -62,6 +62,20 @@
           };
 
 
+          const alertEventSource = new EventSource('/notifications');
+
+          alertEventSource.onmessage = function(event) {
+            const notification = JSON.parse(event.data);
+            console.log('notification:', notification.message);
+          };
+
+          alertEventSource.onerror = function(event) {
+            console.error('failed:', event);
+            alertEventSource.close();
+          };
+
+
+
           loginPage.style.display = "none";
           mainPage.style.display = "block";
         } else {

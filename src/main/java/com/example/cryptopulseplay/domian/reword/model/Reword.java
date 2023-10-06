@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,15 +34,14 @@ public class Reword {
     private User user;
 
     @JoinColumn(name = "gameId")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Game game;
 
 
-    private Reword(Game game, Outcome outcome) {
+    private Reword(Game game) {
         this.game = game;
         this.user = game.getUser();
-        calculateAmount(outcome, game.getAmount());
-
+        calculateAmount(game.getOutcome(), game.getAmount());
     }
 
     private void calculateAmount(Outcome outcome, int amount) {
@@ -53,10 +53,23 @@ public class Reword {
         }
     }
 
+    public void applyReword() {
+        try {
+            this.user.updatePoints(amount);
+            this.rewordStatus = RewordStatus.PAID;
+        } catch (Exception e) {
+            this.rewordStatus = RewordStatus.REJECTED;
+            // 실패시 예외추가.
+            return;
+        }
 
-    public static Reword create(Game game, Outcome outcome) {
 
-        return new Reword(game, outcome);
+    }
+
+
+    public static Reword create(Game game) {
+
+        return new Reword(game);
 
 
 //        아래는 reword 의 상태를 변경한다. 상태를 변경하지말고 새로운 인스턴스를 반환하고 외부에서 생성자생성을 막는다.

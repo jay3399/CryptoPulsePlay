@@ -21,7 +21,6 @@ public class GameSchedulingService {
     private final BtcPriceService btcPriceService;
     private final PriceRecordService priceRecordService;
 
-
     // 매시 정각마다 , 시작가격 기록 .
 
     /**
@@ -30,9 +29,7 @@ public class GameSchedulingService {
      * <p>
      * 이후 , 정각에 이전에 저장한 객체의 결과를 꺼내와서 , 그것을 토대로 게임결과 산출.
      * <p>
-야한다*
-     *
-     *
+     * 야한다*
      */
     @Scheduled(cron = "0 0 * * * *")
     public void recordStartPrice() {
@@ -48,18 +45,13 @@ public class GameSchedulingService {
         gameAppService.calculateGameResult(direction);
     }
 
-    // 리워드를 가지고 ,  유저 포인트 업데이트 및 포인트 업데이트
+    // 리워드를 가지고 ,  유저 포인트 업데이트 및 포인트 업데이트 매시 1분에.
+    @Scheduled
     public void payReword() {
 
-
-
+        gameAppService.payReword();
 
     }
-
-
-
-
-
 
 
 }
