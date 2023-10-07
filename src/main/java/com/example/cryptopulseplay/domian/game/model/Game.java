@@ -1,6 +1,7 @@
 package com.example.cryptopulseplay.domian.game.model;
 
 import com.example.cryptopulseplay.domian.shared.enums.Direction;
+import com.example.cryptopulseplay.domian.shared.service.DomainEventPublisher;
 import com.example.cryptopulseplay.domian.user.model.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -59,6 +60,7 @@ public class Game implements Serializable {
         } else {
             this.outcome = Outcome.LOST;
         }
+        DomainEventPublisher.getInstance().publish(new GameResultEvent(this.id, direction));
     }
 
 

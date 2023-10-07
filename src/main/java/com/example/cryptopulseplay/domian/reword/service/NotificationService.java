@@ -28,6 +28,12 @@ public class NotificationService {
     }
 
     // flux 스트림을 변환후 반환.  해당스트림은 sse 를 통해 구독할수있음.
+
+    /**
+     * Flux - 0 ~ N 개의 아이템을 비동기적으로 차리
+     * 백프레셔지원 - 소비자가 처리할수있는 데이터향을 제어 ,리소스 과부화 방지
+     * 함수형 프로그래밍
+     */
     public Flux<Notification> getNotification() {
         return notificationSink.asFlux();
     }

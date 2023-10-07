@@ -12,9 +12,7 @@ public class RedisKeyUtil {
         return USER_KEY + email;
     }
 
-    public static String getGameKey(String userId) {
-        return GAME_KEY + userId;
-    }
+    public static String getGameKey(String userId) {return GAME_KEY + userId;}
 
     public static String getRecordKey() {
         return RECORD_KEY;

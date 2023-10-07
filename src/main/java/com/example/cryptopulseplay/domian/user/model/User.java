@@ -115,7 +115,6 @@ public class User implements Serializable {
     }
 
     public void updatePoints(int point) {
-
         this.point += point;
 
     }
