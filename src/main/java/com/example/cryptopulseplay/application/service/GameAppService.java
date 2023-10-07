@@ -58,9 +58,9 @@ public class GameAppService {
             //게임 결과 업데이트
             game.calculateOutcome(direction);
 
-            //리워드생성
-            Reword reword = Reword.create(game);
-            rewordRepository.save(reword);
+//            // 리워드생성    분리 -> 이벤트헨들러. 별도 트렌젝션으로 관리.
+//            Reword reword = Reword.create(game);
+//            rewordRepository.save(reword);
 
 
             gameRepository.save(game);

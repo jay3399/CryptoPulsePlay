@@ -60,7 +60,7 @@ public class Game implements Serializable {
         } else {
             this.outcome = Outcome.LOST;
         }
-        DomainEventPublisher.getInstance().publish(new GameResultEvent(this.id, direction));
+        DomainEventPublisher.getInstance().publish(new GameResultEvent(this.id, outcome));
     }
 
 
