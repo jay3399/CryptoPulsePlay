@@ -9,7 +9,6 @@ import lombok.Setter;
 public class GameRequest {
 
 
-    private Long userId;
     private int amount;
     private Direction direction;
 

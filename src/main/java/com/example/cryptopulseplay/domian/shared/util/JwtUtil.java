@@ -2,6 +2,7 @@ package com.example.cryptopulseplay.domian.shared.util;
 
 import com.example.cryptopulseplay.domian.user.model.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -70,6 +71,16 @@ public class JwtUtil {
                 .compact();
     }
 
+    public Long getUserIdFromToken(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            return claims.get("userId", Long.class);
+        } catch (JwtException e) {
+            return null;
+            //예외추가
+        }
+    }
+
 
     public Claims getEmailFromToken(String token) {
 
@@ -80,6 +91,8 @@ public class JwtUtil {
         }
 
     }
+
+
 
     public boolean validateToken(String token) {
 

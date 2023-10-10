@@ -30,6 +30,8 @@ public class UserController {
 
         String email = signInRequest.getEmail();
 
+        System.out.println("email = " + email);
+
         DeviceInfo deviceInfo = signInRequest.getDeviceInfo();
 
         // 캡슐화 ++ 도메인 중심 . 상태 노출x getter x

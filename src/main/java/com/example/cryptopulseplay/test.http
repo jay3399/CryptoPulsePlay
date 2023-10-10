@@ -1,0 +1,8 @@
+POST http://localhost:8080/game
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb3N3eHhAZ21haWwuY29tIiwidXNlcklkIjoxLCJwdXJwb3NlIjoibG9naW5DaGVjayIsImV4cCI6MTY5NjkzMjc4OX0.0THA4-W_9DdG7fItJ32h7d84FDpP_K02z8CraIOfcnc
+
+{
+  "amount": 100,
+  "direction": "UP"
+}

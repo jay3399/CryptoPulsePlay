@@ -44,6 +44,7 @@ public class EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
         try {
+            System.out.println("user.getEmail() = " + user.getEmail());
             helper.setTo(user.getEmail());
             helper.setFrom(MAIL_ADDRESS);
             helper.setSubject("이메일 인증을 완료해주세요");
