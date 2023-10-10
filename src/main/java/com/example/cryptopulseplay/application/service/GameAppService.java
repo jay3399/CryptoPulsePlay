@@ -3,13 +3,10 @@ package com.example.cryptopulseplay.application.service;
 import com.example.cryptopulseplay.domian.game.model.Game;
 import com.example.cryptopulseplay.domian.game.repository.GameRepository;
 import com.example.cryptopulseplay.domian.game.service.GameService;
-import com.example.cryptopulseplay.domian.reword.model.Reword;
-import com.example.cryptopulseplay.domian.reword.repository.RewordRepository;
 import com.example.cryptopulseplay.domian.shared.enums.Direction;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
-import com.example.cryptopulseplay.domian.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.cryptopulseplay.domian.user.service.UserService;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +19,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameAppService {
 
     private final GameService gameService;
-    private final UserRepository userRepository;
-    private final GameRepository gameRepository;
+    private final UserService userService;
     private final RedisUtil redisUtil;
 
-    @Transactional
+    private final GameRepository gameRepository;
+
+
+//    @Transactional
     @Async
     public CompletableFuture<Game> createGame(Long userId, int amount, Direction direction) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User Id" + userId + "not found"));
+        User user = userService.findUser(userId);
 
         Game game = gameService.startGame(user, amount, direction);
 
@@ -56,7 +54,6 @@ public class GameAppService {
      */
 
 
-    @Transactional
     public void calculateGameResult(Direction direction) {
 
         // 키 추출
@@ -74,11 +71,15 @@ public class GameAppService {
             //게임 결과 업데이트
             game.calculateOutcome(direction);
 
-//            // 리워드생성    로직분리 -> 이벤트기반 비동기처리 ,  별도 트렌젝션으로 관리
+            gameRepository.save(game);
+            gameService.saveGame(game);
+
+
+ // 리워드생성    로직분리 -> 이벤트기반 비동기처리 ,  별도 트렌젝션으로 관리
 //            Reword reword = Reword.create(game);
 //            rewordRepository.save(reword);
 
-            gameRepository.save(game);
+
         }
 
     }

@@ -5,6 +5,7 @@ import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
 import com.example.cryptopulseplay.domian.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,17 @@ public class UserService {
         return jwtUtil.generateToken(user, "loginCheck");
 
     }
+
+    @Transactional
+    public User findUser(Long userId) {
+
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User Id" + userId + "not found"));
+
+
+    }
+
+
 
 
 

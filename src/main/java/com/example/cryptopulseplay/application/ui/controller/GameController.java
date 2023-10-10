@@ -20,6 +20,10 @@ public class GameController {
     private final GameAppService gameAppService;
     private final JwtUtil jwtUtil;
 
+    /**
+     * HttpRequest,Response 는 스레드에 종속적 , 비동기 메서드에서는 권장하지 않는다.
+     * Async & Transactional 을 함께 사용하는것은 주의가 필요 -> Async 메서드 내에서 db 작업을 하려면 해당 메서드 내에서 새로운 Transactional 을 호출하는방식이 맞다
+     */
 
     @PostMapping("/game")
     public CompletableFuture<ResponseEntity<GameResponse>> createGame(@RequestBody GameRequest gameRequest , HttpServletRequest request) {
