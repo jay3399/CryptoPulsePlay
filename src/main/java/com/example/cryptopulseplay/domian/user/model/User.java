@@ -1,5 +1,6 @@
 package com.example.cryptopulseplay.domian.user.model;
 
+import com.example.cryptopulseplay.application.exception.custom.AlreadyParticipatingException;
 import com.example.cryptopulseplay.application.exception.custom.InsufficientPointsException;
 import com.example.cryptopulseplay.domian.game.model.Game;
 import jakarta.persistence.CascadeType;
@@ -23,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Getter
@@ -33,7 +35,7 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true , nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Embedded
@@ -43,9 +45,12 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
     private boolean emailVerified = false;
+
+    private boolean isParticipatingInGame = false;
+
     private String refreshToken;
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Game> games = new ArrayList<>();
 
     private User(String email, DeviceInfo deviceInfo) {
@@ -63,12 +68,11 @@ public class User implements Serializable {
 
     public boolean isNewDevice(DeviceInfo deviceInfo) {
 
-
         return !this.deviceInfo.equals(deviceInfo);
 
     }
 
-    public  boolean isLongtime() {
+    public boolean isLongtime() {
 
         if (this.getEmailVerificationDate() != null) {
 
@@ -102,7 +106,8 @@ public class User implements Serializable {
     @AllArgsConstructor
     @NoArgsConstructor
     @EqualsAndHashCode
-    public static class DeviceInfo implements Serializable{
+    public static class DeviceInfo implements Serializable {
+
         private String browser;
         private String platform;
 
@@ -110,14 +115,31 @@ public class User implements Serializable {
 
     // Dirty Checking ; 변경감지.
     public void playGame(int amount) {
+
+        checkParticipationStatus();
         validateSufficientPoints(amount);
+        decreasePoints(amount);
+
+    }
+
+    private void decreasePoints(int amount) {
         this.point -= amount;
     }
 
+
+    //Reword 지급
     public void updatePoints(int point) {
         this.point += point;
 
     }
+
+    private void checkParticipationStatus() {
+        if (this.isParticipatingInGame) {
+            throw new AlreadyParticipatingException("you are already participation in this game");
+        }
+        this.isParticipatingInGame = true;
+    }
+
 
     private void validateSufficientPoints(int amount) {
         if (this.point < amount) {
@@ -125,14 +147,14 @@ public class User implements Serializable {
         }
     }
 
-    public static User create(String email , DeviceInfo deviceInfo) {
-        return new User(email, deviceInfo);
+    public void finishGame() {
+        this.isParticipatingInGame = false;
+
     }
 
-
-
-
-
+    public static User create(String email, DeviceInfo deviceInfo) {
+        return new User(email, deviceInfo);
+    }
 
 
 }

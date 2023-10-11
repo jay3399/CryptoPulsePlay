@@ -5,6 +5,7 @@ import com.example.cryptopulseplay.application.ui.request.GameRequest;
 import com.example.cryptopulseplay.application.ui.response.GameResponse;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,16 +24,21 @@ public class GameController {
     /**
      * HttpRequest,Response 는 스레드에 종속적 , 비동기 메서드에서는 권장하지 않는다.
      * Async & Transactional 을 함께 사용하는것은 주의가 필요 -> Async 메서드 내에서 db 작업을 하려면 해당 메서드 내에서 새로운 Transactional 을 호출하는방식이 맞다
+     * 이러한 복잡한 상황에서는 꼭 비동기가 필요할지 생각을 해봐야하고 , 또한 많은상황을 고려해야만한다.
      */
 
     @PostMapping("/game")
-    public CompletableFuture<ResponseEntity<GameResponse>> createGame(@RequestBody GameRequest gameRequest , HttpServletRequest request) {
+    public ResponseEntity<GameResponse> createGame(@Valid@RequestBody GameRequest gameRequest , HttpServletRequest request) {
 
         Long userId = getUserId(request);
 
-        return gameAppService.createGame(userId , gameRequest.getAmount() , gameRequest.getDirection())
-                .thenApply((game) -> ResponseEntity.ok().body(new GameResponse("Game crated")))
-                .exceptionally(e -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new GameResponse("Creating game is failed")));
+        gameAppService.createGame(userId, gameRequest.getAmount(), gameRequest.getDirection());
+
+        return ResponseEntity.ok().body(new GameResponse("Game created"));
+
+//        return gameAppService.createGame(userId , gameRequest.getAmount() , gameRequest.getDirection())
+//                .thenApply((game) -> ResponseEntity.ok().body(new GameResponse("Game crated")))
+//                .exceptionally(e -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new GameResponse("Creating game is failed")));
     }
 
     private Long getUserId(HttpServletRequest request) {

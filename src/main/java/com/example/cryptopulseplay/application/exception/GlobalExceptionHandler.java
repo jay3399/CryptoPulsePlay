@@ -1,6 +1,7 @@
 package com.example.cryptopulseplay.application.exception;
 
 
+import com.example.cryptopulseplay.application.exception.custom.AlreadyParticipatingException;
 import com.example.cryptopulseplay.application.exception.custom.InsufficientPointsException;
 import com.example.cryptopulseplay.application.exception.custom.MailSenderException;
 import com.example.cryptopulseplay.application.exception.custom.MailVerificationException;
@@ -12,10 +13,13 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -79,6 +83,16 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
+
+        String message = e.getBindingResult().getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage).collect(
+                        Collectors.joining(","));
+        return createErrorResponse(HttpStatus.BAD_REQUEST, message);
+
+    }
+
     // Custom Error --------------------------------------------------------------------------------
 
     @ExceptionHandler(RedisKeyNotFoundException.class)
@@ -104,6 +118,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInsufficientPointsException(InsufficientPointsException e) {
         return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
 
+    }
+
+    @ExceptionHandler(AlreadyParticipatingException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyParticipationException(
+            AlreadyParticipatingException e) {
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus status, String message) {

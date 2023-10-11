@@ -1,11 +1,14 @@
 package com.example.cryptopulseplay.application.ui.controller;
 
+import com.example.cryptopulseplay.application.ui.request.PointRequest;
 import com.example.cryptopulseplay.application.ui.request.SignInRequest;
 import com.example.cryptopulseplay.application.ui.request.SignInRequest.DeviceInfo;
 import com.example.cryptopulseplay.application.ui.response.SignInResponse;
 import com.example.cryptopulseplay.application.service.UserAppService;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
+import com.example.cryptopulseplay.domian.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ public class UserController {
 
     private final UserAppService userAppService;
 
+    private final UserService userService;
     private final JwtUtil jwtUtil;
 
 
@@ -63,6 +67,20 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
         }
+
+
+    }
+
+    @PostMapping("/addPoint")
+    public ResponseEntity<?> updatePoint(HttpServletRequest request, @RequestBody PointRequest pointRequest) {
+
+        String token = JwtUtil.extractToken(request);
+
+        Long userId = jwtUtil.getUserIdFromToken(token);
+
+        userService.addPoint(userId, pointRequest.getPoint());
+
+        return ResponseEntity.ok().body("complete");
 
 
     }

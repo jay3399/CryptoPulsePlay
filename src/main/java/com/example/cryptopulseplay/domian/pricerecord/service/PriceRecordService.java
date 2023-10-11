@@ -20,7 +20,6 @@ public class PriceRecordService {
     // 레디스에 저장하고 , 디비에도 저장을할지
 
     // 아니면 레디스에 저장만하고 , 디비에는 마지막 업데이트때 저장할지. ? (현재)
-    @Transactional
     public void createPriceRecord(Double startPrice) {
 
         PriceRecord priceRecord = PriceRecord.create(startPrice);

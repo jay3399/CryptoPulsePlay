@@ -55,11 +55,20 @@ public class UserService {
 
     }
 
-    @Transactional
     public User findUser(Long userId) {
 
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User Id" + userId + "not found"));
+
+    }
+
+    @Transactional
+    public void addPoint(Long userId, int point) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User Id" + userId + "not found"));
+
+        user.updatePoints(point);
 
 
     }

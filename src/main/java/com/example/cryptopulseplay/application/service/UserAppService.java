@@ -11,6 +11,7 @@ import com.example.cryptopulseplay.domian.user.model.User.DeviceInfo;
 import com.example.cryptopulseplay.domian.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +74,13 @@ public class UserAppService {
 
 
     }
+
+    @Transactional
+    public void finishGameOfUser(Long id) {
+        User user = userService.findUser(id);
+        user.finishGame();
+    }
+
 
     private static String getAlert(String accessToken) {
         return "<html><script>"

@@ -5,7 +5,6 @@ import com.example.cryptopulseplay.domian.game.repository.GameRepository;
 import com.example.cryptopulseplay.domian.reword.model.Reword;
 import com.example.cryptopulseplay.domian.reword.model.RewordStatus;
 import com.example.cryptopulseplay.domian.reword.repository.RewordRepository;
-import com.example.cryptopulseplay.domian.shared.enums.Direction;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

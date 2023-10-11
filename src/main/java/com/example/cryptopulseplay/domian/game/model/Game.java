@@ -60,7 +60,9 @@ public class Game implements Serializable {
         } else {
             this.outcome = Outcome.LOST;
         }
-        DomainEventPublisher.getInstance().publish(new GameResultEvent(this.id, outcome));
+        //게임결과 업데이트 이벤트 발행 -> 리워드생성    로직분리 -> 이벤트기반 비동기처리 ,  별도 트렌젝션으로 관리
+
+        DomainEventPublisher.getInstance().publish(new GameResultEvent(this.id, outcome , user.getId()));
     }
 
 

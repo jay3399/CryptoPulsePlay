@@ -25,17 +25,16 @@ public class GameAppService {
     private final GameRepository gameRepository;
 
 
-//    @Transactional
-    @Async
-    public CompletableFuture<Game> createGame(Long userId, int amount, Direction direction) {
+
+//    @Async
+    @Transactional
+    public void createGame(Long userId, int amount, Direction direction) {
 
         User user = userService.findUser(userId);
 
         Game game = gameService.startGame(user, amount, direction);
 
         redisUtil.setGameByUser(userId, game);
-
-        return CompletableFuture.completedFuture(game);
 
     }
 
@@ -71,11 +70,8 @@ public class GameAppService {
             //게임 결과 업데이트
             game.calculateOutcome(direction);
 
-            gameRepository.save(game);
             gameService.saveGame(game);
 
-
- // 리워드생성    로직분리 -> 이벤트기반 비동기처리 ,  별도 트렌젝션으로 관리
 //            Reword reword = Reword.create(game);
 //            rewordRepository.save(reword);
 
