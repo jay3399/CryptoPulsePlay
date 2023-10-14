@@ -5,13 +5,13 @@ import lombok.Getter;
 @Getter
 public class GameResultEvent {
 
-    private final Long gemaId;
+    private final Game game;
     private final Outcome outcome;
     private final Long userId;
 
 
-    public GameResultEvent(Long gemaId, Outcome outcome , Long userId) {
-        this.gemaId = gemaId;
+    public GameResultEvent(Game game, Outcome outcome , Long userId) {
+        this.game = game;
         this.outcome = outcome;
         this.userId = userId;
     }

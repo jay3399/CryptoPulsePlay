@@ -24,7 +24,7 @@ public class GameResultEventHandler {
 
     @EventListener
     public void handleEvent(GameResultEvent event) {
-        rewordService.createReword(event.getGemaId());
+        rewordService.createReword(event.getGame());
         userAppService.finishGameOfUser(event.getUserId());
         notificationService.notify(new Notification("Game result is" + event.getOutcome()));
     }

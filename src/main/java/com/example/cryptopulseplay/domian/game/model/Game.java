@@ -54,21 +54,21 @@ public class Game implements Serializable {
         setUser(user);
     }
 
-    public void calculateOutcome(Direction actualDirection) {
+    public GameResultEvent calculateOutcome(Direction actualDirection) {
         if (direction == actualDirection) {
             this.outcome = Outcome.WON;
         } else {
             this.outcome = Outcome.LOST;
         }
         //게임결과 업데이트 이벤트 발행 -> 리워드생성    로직분리 -> 이벤트기반 비동기처리 ,  별도 트렌젝션으로 관리
-
-        DomainEventPublisher.getInstance().publish(new GameResultEvent(this.id, outcome , user.getId()));
+//        DomainEventPublisher.getInstance().publish(new GameResultEvent(this.id, outcome , user.getId()));
+        // 엔티티 내부에서 이벤트 발행하는것을 분리.
+        return new GameResultEvent(this , this.outcome, user.getId());
     }
 
 
 
     public static Game createGame(User user, int amount, Direction direction) {
-
         return new Game(user, amount, direction);
 
     }

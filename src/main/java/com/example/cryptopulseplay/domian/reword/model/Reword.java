@@ -3,6 +3,7 @@ package com.example.cryptopulseplay.domian.reword.model;
 import com.example.cryptopulseplay.domian.game.model.Game;
 import com.example.cryptopulseplay.domian.game.model.Outcome;
 import com.example.cryptopulseplay.domian.user.model.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,7 +35,7 @@ public class Reword {
     private User user;
 
     @JoinColumn(name = "gameId")
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY , cascade =  CascadeType.PERSIST)
     private Game game;
 
 
@@ -57,6 +58,7 @@ public class Reword {
         try {
             this.user.updatePoints(amount);
             this.rewordStatus = RewordStatus.PAID;
+            System.out.println(this.rewordStatus);
         } catch (Exception e) {
             this.rewordStatus = RewordStatus.REJECTED;
             // 실패시 예외추가.

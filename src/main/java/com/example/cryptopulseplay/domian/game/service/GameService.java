@@ -26,7 +26,7 @@ public class GameService {
     }
 
 
-    @Transactional
+//    @Transactional
     public void saveGame(Game game) {
         gameRepository.save(game);
     }

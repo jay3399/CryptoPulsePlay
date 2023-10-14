@@ -35,6 +35,7 @@ public class PriceRecord implements Serializable {
     }
 
     public void calculateDirection(Double endPrice) {
+        this.endPrice = endPrice;
         this.direction = endPrice > startPrice ? Direction.UP : Direction.DOWN;
     }
 
