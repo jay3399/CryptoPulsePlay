@@ -1,7 +1,6 @@
 package com.example.cryptopulseplay.domian.game.model;
 
 import com.example.cryptopulseplay.domian.shared.enums.Direction;
-import com.example.cryptopulseplay.domian.shared.service.DomainEventPublisher;
 import com.example.cryptopulseplay.domian.user.model.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,17 +40,17 @@ public class Game implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    public void setUser(User user) {
-        this.user = user;
-        user.getGames().add(this);
-    }
-
+//    public void setUser(User user) {
+//        this.user = user;
+//        user.getGames().add(this);
+//    }
+//
 
     private Game(User user ,int amount, Direction predictedDirection) {
         this.timeStamp = LocalDateTime.now();
         this.amount = amount;
         this.direction = predictedDirection;
-        setUser(user);
+        this.user = user;
     }
 
     public GameResultEvent calculateOutcome(Direction actualDirection) {
@@ -60,8 +59,7 @@ public class Game implements Serializable {
         } else {
             this.outcome = Outcome.LOST;
         }
-        //게임결과 업데이트 이벤트 발행 -> 리워드생성    로직분리 -> 이벤트기반 비동기처리 ,  별도 트렌젝션으로 관리
-//        DomainEventPublisher.getInstance().publish(new GameResultEvent(this.id, outcome , user.getId()));
+
         // 엔티티 내부에서 이벤트 발행하는것을 분리.
         return new GameResultEvent(this , this.outcome, user.getId());
     }

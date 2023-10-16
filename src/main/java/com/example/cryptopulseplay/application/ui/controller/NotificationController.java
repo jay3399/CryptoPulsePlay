@@ -18,7 +18,17 @@ public class NotificationController {
 
     @GetMapping(value = "/notifications" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Notification> getUserNotifications() {
+
+        System.out.println("알림 !!!! ");
+
+        Flux<Notification> notification = notificationService.getNotification();
+
+        notification.doOnNext(
+                notification1 -> System.out.println(notification1.getMessage())
+        ).subscribe();
+
         return notificationService.getNotification();
+
     }
 
 }

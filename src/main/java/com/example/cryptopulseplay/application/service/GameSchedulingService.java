@@ -57,8 +57,10 @@ public class GameSchedulingService {
 
     // 매시 1분 리워드를 가지고 ,유저 포인트 업데이트 및 알림 전송
 //    @Scheduled
-    @Scheduled(fixedRate = 5000000)
+    @Scheduled(fixedRate = 20000)
     public void payReword() {
+
+        System.out.println("REWORD");
 
         rewordAppService.payReword();
 

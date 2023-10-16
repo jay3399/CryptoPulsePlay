@@ -17,10 +17,12 @@ public class NotificationService {
      * 동일한 이벤트스트림 구독가능 -> Sinks.Many
      * 이벤트버퍼링가능 : 일시적으로 연결이 끊어졌을경우 , 누락된 이벤트를 받을수있다 (!)
      * 내부이벤트에 반응
+     *
+     * 리워드 지급이 완료됐을시 , 알림로직
+     *
      */
 
-    private final Sinks.Many<Notification> notificationSink = Sinks.many().multicast()
-            .onBackpressureBuffer();
+    private final Sinks.Many<Notification> notificationSink = Sinks.many().multicast().onBackpressureBuffer();
 
 
     public void notify(Notification notification) {

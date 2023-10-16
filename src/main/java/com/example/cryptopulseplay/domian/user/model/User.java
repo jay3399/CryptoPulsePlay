@@ -135,6 +135,7 @@ public class User implements Serializable {
 
     private void checkParticipationStatus() {
         if (this.isParticipatingInGame) {
+            System.out.println("이미참여");
             throw new AlreadyParticipatingException("you are already participation in this game");
         }
         this.isParticipatingInGame = true;

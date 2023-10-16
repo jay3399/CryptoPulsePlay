@@ -86,8 +86,6 @@ public class GameAppService {
             GameResultEvent gameResultEvent = game.calculateOutcome(direction);
 
             domainEventPublisher.publish(gameResultEvent);
-
-
             //이떄서야 , 영속화가 되기떄문에 , 위 publish에서 gameId를 받아서 game을 찾은뒤 reword를 생성하려해도 의미가 없어짐 .
 
             //game을 reword를 생성하는 시점에 전파를 이용해서 한번에 영속화를 시키는 방법을 이용한다.

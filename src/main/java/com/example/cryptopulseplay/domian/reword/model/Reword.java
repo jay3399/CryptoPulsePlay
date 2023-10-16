@@ -42,20 +42,31 @@ public class Reword {
     private Reword(Game game) {
         this.game = game;
         this.user = game.getUser();
-        calculateAmount(game.getOutcome(), game.getAmount());
+        this.user.getGames().add(game);
+        calculateAmountV2();
     }
 
-    private void calculateAmount(Outcome outcome, int amount) {
+    private void calculateAmountV2() {
 
-        if (outcome == Outcome.WON) {
-            this.amount = amount * 2;
+        if (this.game.getOutcome() == Outcome.WON) {
+            this.amount = this.game.getAmount() * 2;
         } else {
-            this.amount = -amount;
+            this.amount = -this.game.getAmount();
         }
     }
 
+//    private void calculateAmount(Outcome outcome, int amount) {
+//
+//        if (outcome == Outcome.WON) {
+//            this.amount = amount * 2;
+//        } else {
+//            this.amount = -amount;
+//        }
+//    }
+
     public void applyReword() {
         try {
+            System.out.println("Reword is updated:"+amount);
             this.user.updatePoints(amount);
             this.rewordStatus = RewordStatus.PAID;
             System.out.println(this.rewordStatus);
