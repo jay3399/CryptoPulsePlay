@@ -24,14 +24,17 @@ public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/" , "/index.html" ,"/verifyLoginToken" ,"/btc-price","/notifications","/game","/addPoint");
+    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/",
+            "/index.html", "/verifyLoginToken", "/btc-price", "/notifications", "/game",
+            "/addPoint");
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
+
         httpSecurity.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
                         authz -> authz.requestMatchers(
-                                (req) -> permitAllEndpointSet.contains(req.getRequestURI()))
+                                        (req) -> permitAllEndpointSet.contains(req.getRequestURI()))
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, FilterSecurityInterceptor.class)
@@ -49,10 +52,6 @@ public class WebSecurityConfig {
         return httpSecurity.build();
 
     }
-
-
-
-
 
 
 }

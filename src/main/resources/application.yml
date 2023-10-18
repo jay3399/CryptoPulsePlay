@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -22,8 +22,10 @@ spring:
           starttls:
             enable: true
           auth: true
-  profiles:
-    active: test
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
 
 jwt:
   secret: 6ouCAVlTs2RpGKctFeqtKDC3IzQfIuNSZogfQuGYgvo
