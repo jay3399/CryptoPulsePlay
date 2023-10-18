@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
 
 @Entity
@@ -156,6 +157,7 @@ public class User implements Serializable {
     public static User create(String email, DeviceInfo deviceInfo) {
         return new User(email, deviceInfo);
     }
+
 
 
 }

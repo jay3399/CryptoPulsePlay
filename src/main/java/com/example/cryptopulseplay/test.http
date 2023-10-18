@@ -1,9 +1,9 @@
 POST http://localhost:8080/game
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb3N3eHhAZ21haWwuY29tIiwidXNlcklkIjoxLCJwdXJwb3NlIjoibG9naW5DaGVjayIsImV4cCI6MTY5NzYzNjg4OX0.DNlMS61UiiWo16Ao5IWRkIeFeG0p8CRpAx9AH21j3VU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb3N3eHhAZ21haWwuY29tIiwidXNlcklkIjoxLCJwdXJwb3NlIjoibG9naW5DaGVjayIsImV4cCI6MTY5NzY0NzQ1N30.Z7V0B2vYHHRv-RsYQlgjlp9cOk5tU3d6KbmEPT72LsU
 
 {
-  "amount": 30,
+  "amount": 100,
   "direction": "UP"
 }
 

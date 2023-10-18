@@ -4,6 +4,9 @@ import com.example.cryptopulseplay.domian.game.model.Game;
 import com.example.cryptopulseplay.domian.reword.model.Reword;
 import com.example.cryptopulseplay.domian.reword.model.RewordStatus;
 import com.example.cryptopulseplay.domian.reword.repository.RewordRepository;
+import com.example.cryptopulseplay.domian.user.model.User;
+import com.example.cryptopulseplay.domian.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
@@ -16,6 +19,8 @@ public class RewordService {
 
     private final RewordRepository rewordRepository;
 
+    private final UserRepository userRepository;
+
 
     public List<Reword> findRewordOnPending() {
 
@@ -23,15 +28,24 @@ public class RewordService {
 
     }
 
+    /**
+     * 애초에 Redis 에 저장된 game 은 엔티티가 아니다 .
+     * 그곳에서 user 를 꺼내도 내가 원하는 user 가 아님 ( 영속화 돼있는 )
+     * 그렇기에 진짜 내가원하는 user 를 꺼내오려면 game 의 user 에 접근한뒤 id 만을 가져와서 , 진짜 User 를 디비에서 찾아와 영속화 해야한다
+     * 그 뒤에는 user 에서 컬렉션을 명시적으로 초기화한뒤 , game 을 추가해준다 .
+     */
 
     @Transactional
     public void createReword(Game game) {
 
-        //e.LazyInitializationException: failed to lazily initialize a collection of role 오류 , 명시적 초기화 .
+        User user = userRepository.findById(game.getUser().getId()).get();
 
-        Hibernate.initialize(game.getUser().getGames());
+        Hibernate.initialize(user.getGames());  // games 컬렉션 초기화
+
+        user.getGames().add(game);
 
         Reword reword = Reword.create(game);
+
         rewordRepository.save(reword);
 
     }

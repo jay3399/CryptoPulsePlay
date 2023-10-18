@@ -23,6 +23,10 @@ public class GameAppService {
     private final DomainEventPublisher domainEventPublisher;
 
 
+    /**
+     * 1.redis 에 gameDTO 를 저장
+     */
+
 
 //    @Async
     @Transactional

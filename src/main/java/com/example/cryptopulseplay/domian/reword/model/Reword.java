@@ -39,10 +39,11 @@ public class Reword {
     private Game game;
 
 
+    // 게임 객체가 초기화도지않은 user 를 넣고 , 다시 그 유저에 add this 를 함  ,
+    // this.user.getGames().add(game);
     private Reword(Game game) {
         this.game = game;
         this.user = game.getUser();
-        this.user.getGames().add(game);
         calculateAmountV2();
     }
 

@@ -19,8 +19,7 @@ public class GameResultEventHandler {
 
 
     /**
-     * 트렌젝션을 , 도메인서비스에 걸어줄지 , 응용서비스에 할지 고민을 해봐야한다.
-     *
+     * 2.GameDTO 를 이벤트에서 가져온다 .
      */
 
     @EventListener
