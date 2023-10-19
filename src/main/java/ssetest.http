@@ -1,0 +1,2 @@
+GET http://localhost:8080/notifications/{userId}
+Accept: text/event-stream

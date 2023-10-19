@@ -24,8 +24,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.Hibernate;
-import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Getter
@@ -53,6 +51,7 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Game> games = new ArrayList<>();
+
 
     private User(String email, DeviceInfo deviceInfo) {
         this.email = email;

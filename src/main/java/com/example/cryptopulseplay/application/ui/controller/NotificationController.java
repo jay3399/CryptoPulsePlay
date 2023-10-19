@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 
 @Controller
@@ -16,19 +17,12 @@ public class NotificationController {
     private final NotificationService notificationService;
 
 
-    @GetMapping(value = "/notifications" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Notification> getUserNotifications() {
+    @GetMapping(value = "/notifications/{userId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Notification> getUserNotifications(@PathVariable Long userId) {
 
-        System.out.println("알림 !!!! ");
+        Flux<Notification> notification = notificationService.getNotification(userId);
 
-        Flux<Notification> notification = notificationService.getNotification();
-
-        notification.doOnNext(
-                notification1 -> System.out.println(notification1.getMessage())
-        ).subscribe();
-
-        return notificationService.getNotification();
-
+        return notification;
     }
 
 }

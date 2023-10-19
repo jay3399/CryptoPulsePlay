@@ -15,7 +15,6 @@ public class GameResultEventHandler {
 
     private final RewordService rewordService;
     private final UserAppService userAppService;
-    private final NotificationService notificationService;
 
 
     /**
@@ -26,7 +25,6 @@ public class GameResultEventHandler {
     public void handleEvent(GameResultEvent event) {
         rewordService.createReword(event.getGame());
         userAppService.finishGameOfUser(event.getUserId());
-        notificationService.notify(new Notification("Game result is" + event.getOutcome()));
     }
 
 

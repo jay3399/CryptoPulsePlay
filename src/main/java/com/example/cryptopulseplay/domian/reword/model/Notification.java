@@ -8,7 +8,11 @@ public class Notification {
 
     private String message;
 
-    public Notification(String message) {
+    private Long userId;
+
+    public Notification(String message , Long userId) {
         this.message = message;
+        this.userId = userId;
+
     }
 }

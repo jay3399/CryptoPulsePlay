@@ -1,8 +1,8 @@
 package com.example.cryptopulseplay.infrastructure.security;
 
+import com.example.cryptopulseplay.application.exception.custom.JwtValidationException;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,17 +28,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             try {
 
-                boolean b = jwtUtil.validateToken(token);
-
-                System.out.println("b = " + b);
+                jwtUtil.validateToken(token);
 
                 filterChain.doFilter(request, response);
 
             } catch (JwtException e) {
 
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                throw new JwtValidationException("JWT Validation Exception", e);
 
-                return;
             }
         }
 

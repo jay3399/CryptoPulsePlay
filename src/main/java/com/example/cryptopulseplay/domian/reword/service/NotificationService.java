@@ -1,9 +1,12 @@
 package com.example.cryptopulseplay.domian.reword.service;
 
 import com.example.cryptopulseplay.domian.reword.model.Notification;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
+import reactor.core.publisher.Sinks.Many;
 
 @Service
 public class NotificationService {
@@ -22,11 +25,19 @@ public class NotificationService {
      *
      */
 
-    private final Sinks.Many<Notification> notificationSink = Sinks.many().multicast().onBackpressureBuffer();
+//    private final Sinks.Many<Notification> notificationSink = Sinks.many().multicast().onBackpressureBuffer();
 
+
+    private final Map<Long, Sinks.Many<Notification>> userNotificationsSinks = new ConcurrentHashMap<>();
 
     public void notify(Notification notification) {
-        notificationSink.tryEmitNext(notification);
+
+        userNotificationsSinks.computeIfAbsent(notification.getUserId(), id -> Sinks.many().multicast().onBackpressureBuffer())
+                .tryEmitNext(notification);
+
+
+
+
     }
 
     // flux 스트림을 변환후 반환.  해당스트림은 sse 를 통해 구독할수있음.
@@ -36,8 +47,11 @@ public class NotificationService {
      * 백프레셔지원 - 소비자가 처리할수있는 데이터향을 제어 ,리소스 과부화 방지
      * 함수형 프로그래밍
      */
-    public Flux<Notification> getNotification() {
-        return notificationSink.asFlux();
+    public Flux<Notification> getNotification(Long userId) {
+
+        return userNotificationsSinks
+                .computeIfAbsent(userId, id -> Sinks.many().multicast().onBackpressureBuffer())
+                .asFlux();
     }
 
 

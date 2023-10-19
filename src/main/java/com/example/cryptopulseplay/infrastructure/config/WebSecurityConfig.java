@@ -1,5 +1,6 @@
 package com.example.cryptopulseplay.infrastructure.config;
 
+import com.example.cryptopulseplay.application.exception.custom.SecurityRedirectionException;
 import com.example.cryptopulseplay.infrastructure.security.JwtAuthFilter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,22 +32,22 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-
         httpSecurity.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
                         authz -> authz.requestMatchers(
                                         (req) -> permitAllEndpointSet.contains(req.getRequestURI()))
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, FilterSecurityInterceptor.class)
-                .exceptionHandling(e -> e.authenticationEntryPoint(new AuthenticationEntryPoint() {
-                            @Override
-                            public void commence(HttpServletRequest request, HttpServletResponse response,
-                                    AuthenticationException authException)
-                                    throws IOException, ServletException {
+                .exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException)
+                        -> {
+                            try {
                                 response.sendRedirect("/");
-
+                            } catch (IOException ex) {
+                                throw new SecurityRedirectionException("failed to redirect to the URL on Security", ex);
                             }
-                        })
+
+                        }
+                        )
                 );
 
         return httpSecurity.build();

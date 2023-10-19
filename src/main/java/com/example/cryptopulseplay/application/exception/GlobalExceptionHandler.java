@@ -3,6 +3,7 @@ package com.example.cryptopulseplay.application.exception;
 
 import com.example.cryptopulseplay.application.exception.custom.AlreadyParticipatingException;
 import com.example.cryptopulseplay.application.exception.custom.InsufficientPointsException;
+import com.example.cryptopulseplay.application.exception.custom.JwtValidationException;
 import com.example.cryptopulseplay.application.exception.custom.MailSenderException;
 import com.example.cryptopulseplay.application.exception.custom.MailVerificationException;
 import com.example.cryptopulseplay.application.exception.custom.RedisKeyNotFoundException;
@@ -123,6 +124,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyParticipatingException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyParticipationException(
             AlreadyParticipatingException e) {
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(JwtValidationException.class)
+    public ResponseEntity<ErrorResponse> handleJwtValidationException(JwtValidationException e) {
         return createErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 

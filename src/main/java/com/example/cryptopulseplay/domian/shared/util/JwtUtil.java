@@ -97,9 +97,12 @@ public class JwtUtil {
     public boolean validateToken(String token) {
 
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
             return true;
+
+//            return !isTokenExpired(claims) && isTokenExpired(claims);
+
         } catch (JwtException | IllegalArgumentException exception) {
 
             return false;
@@ -117,6 +120,15 @@ public class JwtUtil {
 
     private static String getAuthorization(HttpServletRequest request) {
         return request.getHeader("Authorization");
+    }
+
+
+    private boolean isTokenExpired(Claims claims) {
+        return claims.getExpiration().before(new Date());
+    }
+
+    private boolean isTokenForLoginCheck(Claims claims) {
+        return "loginCheck".equals(claims.get("purpose", String.class));
     }
 
 
