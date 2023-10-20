@@ -2,7 +2,6 @@ package com.example.cryptopulseplay.domian.shared.util;
 
 import com.example.cryptopulseplay.domian.user.model.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

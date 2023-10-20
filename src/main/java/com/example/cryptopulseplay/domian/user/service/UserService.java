@@ -33,7 +33,7 @@ public class UserService {
     }
 
 
-
+    @Transactional
     public String verifyEmail(String token) {
 
         String email = jwtUtil.getEmailFromToken(token).getSubject();
@@ -46,10 +46,13 @@ public class UserService {
             throw new MailVerificationException();
         }
 
-        if (!user.isEmailVerified()) {
-            user.markEmailAsVerified(jwtUtil.generateRefreshToken(user));
-            userRepository.save(user);
-        }
+        String refreshToken = jwtUtil.generateRefreshToken(user);
+
+        user.markEmailAsVerified();
+
+        user.updateEmailVerifiedDateAndRefreshToken(refreshToken);
+
+        userRepository.save(user);
 
         return jwtUtil.generateToken(user, "loginCheck");
 

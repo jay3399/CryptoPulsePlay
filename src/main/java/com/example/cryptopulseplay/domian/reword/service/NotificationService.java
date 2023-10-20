@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
-import reactor.core.publisher.Sinks.Many;
 
 @Service
 public class NotificationService {
@@ -16,36 +15,25 @@ public class NotificationService {
     // multicast : sink 가 여러 구독자에게 데이터를 전송할수있도록함
     // onBackpressureBuffer : backpressure 상황에서 버퍼링을 사용 , 데이터를 전송할 준비가 되지않은 구독자가 있을때 데이터를 일시적으로 버퍼에 저장.
     /**
-     * 포인트 지급과같은 해당방식을 이용.
-     * 동일한 이벤트스트림 구독가능 -> Sinks.Many
-     * 이벤트버퍼링가능 : 일시적으로 연결이 끊어졌을경우 , 누락된 이벤트를 받을수있다 (!)
-     * 내부이벤트에 반응
-     *
+     * 포인트 지급과같은 해당방식을 이용. 동일한 이벤트스트림 구독가능 -> Sinks.Many 이벤트버퍼링가능 : 일시적으로 연결이 끊어졌을경우 , 누락된 이벤트를
+     * 받을수있다 (!) 내부이벤트에 반응
+     * <p>
      * 리워드 지급이 완료됐을시 , 알림로직
-     *
      */
-
-//    private final Sinks.Many<Notification> notificationSink = Sinks.many().multicast().onBackpressureBuffer();
-
-
     private final Map<Long, Sinks.Many<Notification>> userNotificationsSinks = new ConcurrentHashMap<>();
 
     public void notify(Notification notification) {
 
-        userNotificationsSinks.computeIfAbsent(notification.getUserId(), id -> Sinks.many().multicast().onBackpressureBuffer())
+        userNotificationsSinks.computeIfAbsent(notification.getUserId(),
+                        id -> Sinks.many().multicast().onBackpressureBuffer())
                 .tryEmitNext(notification);
-
-
-
 
     }
 
     // flux 스트림을 변환후 반환.  해당스트림은 sse 를 통해 구독할수있음.
 
     /**
-     * Flux - 0 ~ N 개의 아이템을 비동기적으로 차리
-     * 백프레셔지원 - 소비자가 처리할수있는 데이터향을 제어 ,리소스 과부화 방지
-     * 함수형 프로그래밍
+     * Flux - 0 ~ N 개의 아이템을 비동기적으로 차리 백프레셔지원 - 소비자가 처리할수있는 데이터향을 제어 ,리소스 과부화 방지 함수형 프로그래밍
      */
     public Flux<Notification> getNotification(Long userId) {
 

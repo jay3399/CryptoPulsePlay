@@ -25,28 +25,29 @@ public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/",
-            "/index.html", "/verifyLoginToken", "/btc-price", "/notifications", "/game",
-            "/addPoint");
+    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/", "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint");
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
                         authz -> authz.requestMatchers(
-                                        (req) -> permitAllEndpointSet.contains(req.getRequestURI()))
+                                        (req) -> permitAllEndpointSet.contains(req.getRequestURI())
+                                                || req.getRequestURI().startsWith("/notifications/"))
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, FilterSecurityInterceptor.class)
-                .exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException)
-                        -> {
-                            try {
-                                response.sendRedirect("/");
-                            } catch (IOException ex) {
-                                throw new SecurityRedirectionException("failed to redirect to the URL on Security", ex);
-                            }
+                .exceptionHandling(
+                        e -> e.authenticationEntryPoint((request, response, authException)
+                                        -> {
+                                    try {
+                                        response.sendRedirect("/");
+                                    } catch (IOException ex) {
+                                        throw new SecurityRedirectionException(
+                                                "failed to redirect to the URL on Security", ex);
+                                    }
 
-                        }
+                                }
                         )
                 );
 

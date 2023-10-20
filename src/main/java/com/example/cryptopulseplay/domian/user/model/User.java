@@ -39,11 +39,12 @@ public class User implements Serializable {
 
     @Embedded
     private DeviceInfo deviceInfo;
-    private LocalDateTime emailVerificationDate;
     private int point = 0;
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
     private boolean emailVerified = false;
+
+    private LocalDateTime emailVerificationDate;
 
     private boolean isParticipatingInGame = false;
 
@@ -91,8 +92,11 @@ public class User implements Serializable {
     }
 
 
-    public void markEmailAsVerified(String refreshToken) {
+    public void markEmailAsVerified() {
         this.emailVerified = true;
+    }
+
+    public void updateEmailVerifiedDateAndRefreshToken(String refreshToken) {
         this.emailVerificationDate = LocalDateTime.now();
         this.refreshToken = refreshToken;
     }
@@ -156,7 +160,6 @@ public class User implements Serializable {
     public static User create(String email, DeviceInfo deviceInfo) {
         return new User(email, deviceInfo);
     }
-
 
 
 }
