@@ -23,12 +23,7 @@ public class GameAppService {
     private final DomainEventPublisher domainEventPublisher;
 
 
-    /**
-     * 1.redis 에 gameDTO 를 저장
-     */
 
-
-//    @Async
     @Transactional
     public void createGame(Long userId, int amount, Direction direction) {
 
@@ -45,13 +40,9 @@ public class GameAppService {
     // 게임결과 생성 , 스트림 고려
 
     /**
-     * 모든 게임데이터를 순회하고 , 로직을 수행하고 , 디비에 저장하는 작업
-     * if 대용량 -> 과부화를 일으킬수있다
-     * -> Spring Batch 적용 고려 .
-     * Chunk Processing - 게임 데이터를 일정크기의 청크로 나누어 , 청크마다 트랜잭션을 관리
-     * Parallel Processing - 여러 스레드를사용 , 각 청크를 병렬로 처리
-     * Retry - 실패한 작업에대해 재시도 or 특정 횟수이상 실패하면 건너뛰는 로직 실행
-     *
+     * 모든 게임데이터를 순회하고 , 로직을 수행하고 , 디비에 저장하는 작업 if 대용량 -> 과부화를 일으킬수있다 -> Spring Batch 적용 고려 . Chunk
+     * Processing - 게임 데이터를 일정크기의 청크로 나누어 , 청크마다 트랜잭션을 관리 Parallel Processing - 여러 스레드를사용 , 각 청크를
+     * 병렬로 처리 Retry - 실패한 작업에대해 재시도 or 특정 횟수이상 실패하면 건너뛰는 로직 실행
      */
 
 
@@ -84,19 +75,10 @@ public class GameAppService {
 
             //게임 추출
             Game game = redisUtil.getGame(gameKey);
-            //게임 결과 업데이트
 
-            //해당시점에서는 game은 영속화가 되어있지 않아서 , gameId 를 반환 해도 Null로 반환이된다.
             GameResultEvent gameResultEvent = game.calculateOutcome(direction);
 
             domainEventPublisher.publish(gameResultEvent);
-            //이떄서야 , 영속화가 되기떄문에 , 위 publish에서 gameId를 받아서 game을 찾은뒤 reword를 생성하려해도 의미가 없어짐 .
-
-            //game을 reword를 생성하는 시점에 전파를 이용해서 한번에 영속화를 시키는 방법을 이용한다.
-//            gameService.saveGame(game);
-
-//            Reword reword = Reword.create(game);
-//            rewordRepository.save(reword);
 
 
         }
@@ -105,3 +87,9 @@ public class GameAppService {
 
 
 }
+
+//game을 reword를 생성하는 시점에 전파를 이용해서 한번에 영속화를 시키는 방법을 이용한다.
+//            gameService.saveGame(game);
+
+//            Reword reword = Reword.create(game);
+//            rewordRepository.save(reword);

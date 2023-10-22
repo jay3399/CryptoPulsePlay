@@ -56,21 +56,13 @@ public class Reword {
         }
     }
 
-//    private void calculateAmount(Outcome outcome, int amount) {
-//
-//        if (outcome == Outcome.WON) {
-//            this.amount = amount * 2;
-//        } else {
-//            this.amount = -amount;
-//        }
-//    }
+
+
 
     public void applyReword() {
         try {
-            System.out.println("Reword is updated:"+amount);
             this.user.updatePoints(amount);
             this.rewordStatus = RewordStatus.PAID;
-            System.out.println(this.rewordStatus);
         } catch (Exception e) {
             this.rewordStatus = RewordStatus.REJECTED;
             // 실패시 예외추가.

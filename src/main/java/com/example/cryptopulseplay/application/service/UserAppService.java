@@ -65,13 +65,7 @@ public class UserAppService {
 
         String accessToken = userService.verifyEmail(token);
 
-        if (accessToken != null) {
-            return getAlert(accessToken);
-        } else {
-            return null;
-            //예외
-        }
-
+        return accessToken;
 
     }
 

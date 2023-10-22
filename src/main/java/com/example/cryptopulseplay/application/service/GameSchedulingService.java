@@ -42,7 +42,6 @@ public class GameSchedulingService {
 
         double startPrice = btcPriceService.getCurrentPrice().block().getPrice();
         priceRecordService.createPriceRecord(startPrice);
-        System.out.println("startPrice = " + startPrice);
     }
 
     //매시 59분 59초 , 마지막 가격기록후 게임결과 & 리워드 생성
@@ -50,7 +49,6 @@ public class GameSchedulingService {
     @Scheduled(fixedRate = 40000)
     public void recordEndPriceAndReword() {
         double endPrice = btcPriceService.getCurrentPrice().block().getPrice();
-        System.out.println("endPrice = " + endPrice);
         Direction direction = priceRecordService.updatePriceRecord(endPrice);
         gameAppService.calculateGameResult(direction);
     }
@@ -59,8 +57,6 @@ public class GameSchedulingService {
 //    @Scheduled
     @Scheduled(fixedRate = 20000)
     public void payReword() {
-
-        System.out.println("REWORD");
 
         rewordAppService.payReword();
 

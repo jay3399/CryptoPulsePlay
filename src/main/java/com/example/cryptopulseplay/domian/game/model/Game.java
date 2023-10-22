@@ -40,11 +40,7 @@ public class Game implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-//    public void setUser(User user) {
-//        this.user = user;
-//        user.getGames().add(this);
-//    }
-//
+
 
     private Game(User user ,int amount, Direction predictedDirection) {
         this.timeStamp = LocalDateTime.now();
@@ -76,3 +72,11 @@ public class Game implements Serializable {
 
 
 }
+
+
+
+//    public void setUser(User user) {
+//        this.user = user;
+//        user.getGames().add(this);
+//    }
+//

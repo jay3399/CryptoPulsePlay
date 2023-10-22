@@ -7,7 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 public class VotingResult {
@@ -15,7 +15,11 @@ public class VotingResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date timeStamp;
+    private LocalDateTime timeStamp;
+
+    private int longCount;
+    private int shortCount;
+
 
     @Enumerated(EnumType.STRING)
     private Direction direction;

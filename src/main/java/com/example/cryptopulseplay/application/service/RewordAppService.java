@@ -25,7 +25,8 @@ public class RewordAppService {
         for (Reword reword : rewordOnPending) {
             reword.applyReword();
             Long userId = reword.getUser().getId();
-            Notification notification = new Notification("you've received reword : " + reword.getAmount(), userId);
+            Notification notification = new Notification(
+                    "you've received reword : " + reword.getAmount(), userId);
             notificationService.notify(notification);
         }
 
@@ -36,9 +37,6 @@ public class RewordAppService {
 //        rewords.parallelStream().forEach(Reword::applyReword);
 
     }
-
-
-
 
 
 }

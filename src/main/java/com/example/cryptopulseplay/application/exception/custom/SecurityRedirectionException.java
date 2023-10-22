@@ -1,6 +1,6 @@
 package com.example.cryptopulseplay.application.exception.custom;
 
-public class SecurityRedirectionException extends RuntimeException{
+public class SecurityRedirectionException extends RuntimeException {
 
 
     public SecurityRedirectionException(String message, Throwable cause) {

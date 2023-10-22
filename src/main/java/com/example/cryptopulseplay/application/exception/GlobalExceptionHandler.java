@@ -24,13 +24,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-/**
- * 필요예외 -
- * <p>
- * 디비 , 제약조건 위반 o  , null 레디스 ,연결  , null o 컨트롤러 검증 , valid x 이메일요청 o 이메일 검증 o jwt o SSE : 연결 , 타임아웃
- * .
- */
-
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

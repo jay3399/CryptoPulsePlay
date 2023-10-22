@@ -16,8 +16,6 @@ public class GameService {
 
     public Game startGame(User user, int amount, Direction direction) {
 
-        System.out.println("start game = " + amount);
-
         user.playGame(amount);
 
         return Game.createGame(user, amount, direction);
