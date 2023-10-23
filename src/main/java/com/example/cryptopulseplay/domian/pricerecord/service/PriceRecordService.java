@@ -38,5 +38,19 @@ public class PriceRecordService {
 
     }
 
+    @Transactional
+    public void updateCountOnDirection(Direction direction) {
+
+        PriceRecord priceRecord = priceRecordRepository.findTopByOrderByTimeStampDesc();
+
+        if (direction == Direction.UP) {
+            priceRecord.increaseLongCount();
+        } else {
+            priceRecord.increaseShortCount();
+        }
+
+
+    }
+
 
 }

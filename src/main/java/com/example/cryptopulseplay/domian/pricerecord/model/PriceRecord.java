@@ -13,6 +13,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * 추가
+ *
+ */
+
+
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,6 +34,11 @@ public class PriceRecord implements Serializable {
 
     private Double startPrice;
     private Double endPrice;
+
+    private int longCounts;
+    private int shortCounts;
+
+
     @Enumerated(EnumType.STRING)
     private Direction direction = Direction.PENDING;
 
@@ -39,12 +52,19 @@ public class PriceRecord implements Serializable {
         this.direction = endPrice > startPrice ? Direction.UP : Direction.DOWN;
     }
 
+    public void increaseLongCount() {
+        this.longCounts++;
+    }
+
+    public void increaseShortCount() {
+        this.shortCounts++;
+    }
+
+
     public static PriceRecord create(Double startPrice) {
 
         return new PriceRecord(startPrice);
     }
-
-
 
 
 }

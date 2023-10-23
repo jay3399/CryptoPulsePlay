@@ -3,6 +3,7 @@ package com.example.cryptopulseplay.application.service;
 import com.example.cryptopulseplay.domian.game.model.Game;
 import com.example.cryptopulseplay.domian.game.model.GameResultEvent;
 import com.example.cryptopulseplay.domian.game.service.GameService;
+import com.example.cryptopulseplay.domian.reword.service.RewordService;
 import com.example.cryptopulseplay.domian.shared.enums.Direction;
 import com.example.cryptopulseplay.domian.shared.service.DomainEventPublisher;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
@@ -19,6 +20,7 @@ public class GameAppService {
 
     private final GameService gameService;
     private final UserService userService;
+    private final RewordService rewordService;
     private final RedisUtil redisUtil;
     private final DomainEventPublisher domainEventPublisher;
 
@@ -71,9 +73,10 @@ public class GameAppService {
          * + 이벤트발행로직을 도메인객체에서 분리하고 , 도메인은 이벤트객체만을 발행한다.
          */
 
+
+
         for (String gameKey : gameKeys) {
 
-            //게임 추출
             Game game = redisUtil.getGame(gameKey);
 
             GameResultEvent gameResultEvent = game.calculateOutcome(direction);
@@ -83,6 +86,42 @@ public class GameAppService {
 
         }
 
+    }
+
+    /**
+     *  이벤트헨들러 전략 사용 x
+     */
+
+    @Transactional
+    public void calculateGameResultV2(Direction direction) {
+
+        Set<String> gameKeys = redisUtil.gameKeys();
+        if (gameKeys == null) {
+            return;
+        }
+
+        for (String gameKey : gameKeys) {
+            Game game = redisUtil.getGame(gameKey);
+            game.calculateOutcome(direction);
+            handleGameOutcome(game);
+
+        }
+
+    }
+
+
+    private void handleGameOutcome(Game game) {
+        createRewordForGame(game);
+        finishGameForUser(game.getUser().getId());
+    }
+
+    private void createRewordForGame(Game game) {
+        rewordService.createReword(game);
+    }
+
+    private void finishGameForUser(Long userId) {
+        User user = userService.findUser(userId);
+        user.finishGame();
     }
 
 

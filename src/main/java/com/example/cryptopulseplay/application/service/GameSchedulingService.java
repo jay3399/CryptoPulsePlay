@@ -34,6 +34,10 @@ public class GameSchedulingService {
      * 값을 가지고 reword 객체를 생성. 후 리워드 와 게임을 rdb 에 저장. (  gameAppService.calculateGameResult(direction);
      * ) 3. 매시 1분마다 , 위에서 생성한 Pending 상태의 Reword 를 가지고 , 포인트 지급 로직을 실행 (
      * rewordAppService.payReword(); )
+     *
+     *
+     * priceRecord 에 해당회차의 모든 게임들에서
+     *
      */
 
 //    @Scheduled(cron = "0 0 * * * *")
@@ -49,8 +53,11 @@ public class GameSchedulingService {
     @Scheduled(fixedRate = 40000)
     public void recordEndPriceAndReword() {
         double endPrice = btcPriceService.getCurrentPrice().block().getPrice();
+
         Direction direction = priceRecordService.updatePriceRecord(endPrice);
+
         gameAppService.calculateGameResult(direction);
+
     }
 
     // 매시 1분 리워드를 가지고 ,유저 포인트 업데이트 및 알림 전송
