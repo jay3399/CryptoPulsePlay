@@ -10,6 +10,9 @@ import com.example.cryptopulseplay.domian.shared.service.DomainEventPublisher;
 import com.example.cryptopulseplay.domian.shared.util.RedisUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
 import com.example.cryptopulseplay.domian.user.service.UserService;
+import jakarta.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ public class GameAppService {
     private final RewordService rewordService;
     private final RedisUtil redisUtil;
     private final DomainEventPublisher domainEventPublisher;
+
+    private final EntityManager entityManager;
 
 
     @Transactional
@@ -95,8 +100,12 @@ public class GameAppService {
     }
 
     /**
-     * 이벤트헨들러 전략 사용 x
-     * 트렌젝션 문제때문에 사용하기가 번거로움 + 카운트 기능까지 포함하려면 더더욱.
+     * 이벤트헨들러 전략 사용 x 트렌젝션 문제때문에 사용하기가 번거로움 + 카운트 기능까지 포함하려면 더더욱.
+     * <p>
+     * but , 아래처럼 전체에다가 트랜잭션을 걸면 범위가 너무 넓다 !! 1. 롤백 문제 , 마지막에서 예외가생겨도 전체롤백 2. 성능문제 , 큰범위의 트랜잭션은
+     * 데이터베이스의 잠금시간을 늘릴수있다 -> 다른 트랜젝션들에대한 대기시간을 증가시킬수가있음.
+     * <p>
+     * 보상생성 부분을 따로 별도의 트랜젝션으로 메서드를 분리해서 적용한다
      */
 
     @Transactional
@@ -108,6 +117,33 @@ public class GameAppService {
             return;
         }
 
+        for (String gameKey : gameKeys) {
+            // 게임추출
+            Game game = redisUtil.getGame(gameKey);
+            // 해당 게임의 에측방향을 가져옴
+            Direction userDirection = game.getDirection();
+            // 해당 게임의 예측방향과 , 실제 해당회 게임의 실제 방향을 비교후 게임의 결과를 업데이트
+            game.calculateOutcome(priceRecord.getDirection());
+            // 유저의 방향을 가져와서, priceRecord 에 종합적으로 해당 회차 게임의 모든 투표 결과를 집계.
+            countOnVoting(userDirection, priceRecord);
+            // 게임을 끝냄 , 해당 게임에 해당하는 리워드를 만들고 , 유저의 게임참개 상태를 false 로 업데이트.
+            // -> 해당부분을 별도의 트랭ㄴ잭션으로 분리
+            finishGame(game);
+        }
+
+
+    }
+
+    @Transactional
+    public void calculateGameResultV3(PriceRecord priceRecord) {
+
+        Set<String> gameKeys = redisUtil.gameKeys();
+
+        if (gameKeys == null) {
+            return;
+        }
+
+        List<Game> gamesToReword = new ArrayList<>();
 
         for (String gameKey : gameKeys) {
             // 게임추출
@@ -119,8 +155,12 @@ public class GameAppService {
             // 유저의 방향을 가져와서, priceRecord 에 종합적으로 해당 회차 게임의 모든 투표 결과를 집계.
             countOnVoting(userDirection, priceRecord);
             // 게임을 끝냄 , 해당 게임에 해당하는 리워드를 만들고 , 유저의 게임참개 상태를 false 로 업데이트.
-            finishGame(game);
+            // -> 해당부분을 별도의 트랭ㄴ잭션으로 분리
         }
+
+        // 배치 처리 적용
+        finishGameV2(gamesToReword);
+
 
     }
 
@@ -129,6 +169,28 @@ public class GameAppService {
         createRewordForGame(game);
         finishGameForUser(game.getUser().getId());
     }
+
+    @Transactional
+    public void finishGameV2(List<Game> games) {
+
+        int batchSize = 50;
+        int count = 0;
+
+        for (Game game : games) {
+            createRewordForGame(game);
+            finishGameForUser(game.getUser().getId());
+
+            if (++count % batchSize == 0) {
+
+                entityManager.flush();
+                entityManager.clear();
+
+            }
+        }
+
+        entityManager.flush();
+    }
+
 
     private void createRewordForGame(Game game) {
         rewordService.createReword(game);
@@ -142,7 +204,7 @@ public class GameAppService {
     private void countOnVoting(Direction userDirection, PriceRecord priceRecord) {
 
         if (userDirection == Direction.UP) {
-            priceRecord.increaseShortCount();
+            priceRecord.increaseLongCount();
         } else {
             priceRecord.increaseShortCount();
         }
