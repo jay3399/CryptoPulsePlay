@@ -38,6 +38,20 @@ public class PriceRecordService {
 
     }
 
+
+    @Transactional
+    public PriceRecord updatePriceRecordV2(Double endPrice) {
+
+        PriceRecord priceRecord = redisUtil.getPriceRecord();
+
+        priceRecord.calculateDirection(endPrice);
+
+        PriceRecord priceRecord1 = priceRecordRepository.save(priceRecord);
+
+        return priceRecord1;
+
+    }
+
     @Transactional
     public void updateCountOnDirection(Direction direction) {
 

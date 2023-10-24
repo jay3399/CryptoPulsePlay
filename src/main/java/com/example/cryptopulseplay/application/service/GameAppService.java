@@ -3,6 +3,7 @@ package com.example.cryptopulseplay.application.service;
 import com.example.cryptopulseplay.domian.game.model.Game;
 import com.example.cryptopulseplay.domian.game.model.GameResultEvent;
 import com.example.cryptopulseplay.domian.game.service.GameService;
+import com.example.cryptopulseplay.domian.pricerecord.model.PriceRecord;
 import com.example.cryptopulseplay.domian.reword.service.RewordService;
 import com.example.cryptopulseplay.domian.shared.enums.Direction;
 import com.example.cryptopulseplay.domian.shared.service.DomainEventPublisher;
@@ -23,7 +24,6 @@ public class GameAppService {
     private final RewordService rewordService;
     private final RedisUtil redisUtil;
     private final DomainEventPublisher domainEventPublisher;
-
 
 
     @Transactional
@@ -71,13 +71,19 @@ public class GameAppService {
          * 2. 이벤트가 발행되면 , 이벤트에 게임객체를 넣은뒤 해당 게임객체를 리워드를 생성할때 전파 기능을 이용해서 한번에 영속화시킨다.
          *
          * + 이벤트발행로직을 도메인객체에서 분리하고 , 도메인은 이벤트객체만을 발행한다.
+         *
+         * -> 문제점 , 이벤트가 발행될떄마다 디비에 save 가 날라간다.
+         *
+         *
+         *
+         *
          */
-
-
 
         for (String gameKey : gameKeys) {
 
             Game game = redisUtil.getGame(gameKey);
+
+            Direction userDirection = game.getDirection();
 
             GameResultEvent gameResultEvent = game.calculateOutcome(direction);
 
@@ -89,28 +95,37 @@ public class GameAppService {
     }
 
     /**
-     *  이벤트헨들러 전략 사용 x
+     * 이벤트헨들러 전략 사용 x
+     * 트렌젝션 문제때문에 사용하기가 번거로움 + 카운트 기능까지 포함하려면 더더욱.
      */
 
     @Transactional
-    public void calculateGameResultV2(Direction direction) {
+    public void calculateGameResultV2(PriceRecord priceRecord) {
 
         Set<String> gameKeys = redisUtil.gameKeys();
+
         if (gameKeys == null) {
             return;
         }
 
-        for (String gameKey : gameKeys) {
-            Game game = redisUtil.getGame(gameKey);
-            game.calculateOutcome(direction);
-            handleGameOutcome(game);
 
+        for (String gameKey : gameKeys) {
+            // 게임추출
+            Game game = redisUtil.getGame(gameKey);
+            // 해당 게임의 에측방향을 가져옴
+            Direction userDirection = game.getDirection();
+            // 해당 게임의 예측방향과 , 실제 해당회 게임의 실제 방향을 비교후 게임의 결과를 업데이트
+            game.calculateOutcome(priceRecord.getDirection());
+            // 유저의 방향을 가져와서, priceRecord 에 종합적으로 해당 회차 게임의 모든 투표 결과를 집계.
+            countOnVoting(userDirection, priceRecord);
+            // 게임을 끝냄 , 해당 게임에 해당하는 리워드를 만들고 , 유저의 게임참개 상태를 false 로 업데이트.
+            finishGame(game);
         }
 
     }
 
 
-    private void handleGameOutcome(Game game) {
+    private void finishGame(Game game) {
         createRewordForGame(game);
         finishGameForUser(game.getUser().getId());
     }
@@ -124,11 +139,16 @@ public class GameAppService {
         user.finishGame();
     }
 
+    private void countOnVoting(Direction userDirection, PriceRecord priceRecord) {
+
+        if (userDirection == Direction.UP) {
+            priceRecord.increaseShortCount();
+        } else {
+            priceRecord.increaseShortCount();
+        }
+
+
+    }
+
 
 }
-
-//game을 reword를 생성하는 시점에 전파를 이용해서 한번에 영속화를 시키는 방법을 이용한다.
-//            gameService.saveGame(game);
-
-//            Reword reword = Reword.create(game);
-//            rewordRepository.save(reword);

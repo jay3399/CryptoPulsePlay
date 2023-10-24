@@ -1,6 +1,7 @@
 package com.example.cryptopulseplay.application.service;
 
 import com.example.cryptopulseplay.domian.btcprice.service.BtcPriceService;
+import com.example.cryptopulseplay.domian.pricerecord.model.PriceRecord;
 import com.example.cryptopulseplay.domian.pricerecord.service.PriceRecordService;
 import com.example.cryptopulseplay.domian.shared.enums.Direction;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,16 @@ public class GameSchedulingService {
         Direction direction = priceRecordService.updatePriceRecord(endPrice);
 
         gameAppService.calculateGameResult(direction);
+
+    }
+
+    @Scheduled(fixedRate = 40000)
+    public void recordEndPriceAndRewordV2() {
+        double endPrice = btcPriceService.getCurrentPrice().block().getPrice();
+
+        PriceRecord priceRecord = priceRecordService.updatePriceRecordV2(endPrice);
+
+        gameAppService.calculateGameResultV2(priceRecord);
 
     }
 
