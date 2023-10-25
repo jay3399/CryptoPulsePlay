@@ -1,5 +1,6 @@
 package com.example.cryptopulseplay.domian.shared.util;
 
+import com.example.cryptopulseplay.application.exception.custom.JwtValidationException;
 import com.example.cryptopulseplay.domian.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -7,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,16 +25,19 @@ public class JwtUtil {
     }
 
 
-
-    public  String generateToken(User user, String purpose) {
+    public String generateToken(User user, String purpose) {
 
         try {
             return Jwts.builder()
+                    .setId(UUID.randomUUID().toString())
+                    .setIssuer("CryptoPulsePlay")
+                    .setAudience("UserOnPlay")
                     .setSubject(user.getEmail())
                     .claim("userId", user.getId())
                     .claim("purpose", purpose)
+                    .claim("role", user.getRole().name())
                     .setExpiration(
-                            new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)))
+                            new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)))
                     .signWith(SignatureAlgorithm.HS256, secret)
                     .compact();
 
@@ -49,7 +54,7 @@ public class JwtUtil {
                     .setSubject(email)
                     .claim("purpose", purpose)
                     .setExpiration(
-                            new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)))
+                            new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(30)))
                     .signWith(SignatureAlgorithm.HS256, secret)
                     .compact();
 
@@ -65,7 +70,8 @@ public class JwtUtil {
                 .setSubject(user.getEmail())
                 .claim("userId", user.getId())
                 .claim("purpose", "refresh")
-                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7)))  // 7일 동안 유효
+                .setExpiration(new Date(
+                        System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7)))  // 7일 동안 유효
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
@@ -81,10 +87,20 @@ public class JwtUtil {
     }
 
 
-    public Claims getEmailFromToken(String token) {
+    public Claims getClaims(String token) {
 
         try {
             return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        } catch (JwtException e) {
+            return null;
+        }
+    }
+
+
+    public String getEmailFromToken(String token) {
+
+        try {
+            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
         } catch (JwtException e) {
             return null;
         }
@@ -92,21 +108,42 @@ public class JwtUtil {
     }
 
 
-
-    public boolean validateToken(String token) {
+    public boolean validateTokenForMail(String token) {
 
         try {
             Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
-            return true;
-
-//            return !isTokenExpired(claims) && isTokenExpired(claims);
+            return !isTokenExpired(claims);
 
         } catch (JwtException | IllegalArgumentException exception) {
 
             return false;
         }
 
+    }
+
+    public boolean validateToken(String token) {
+
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+
+            return !isTokenExpired(claims) && isTokenForLoginCheck(claims);
+
+        } catch (JwtException | IllegalArgumentException exception) {
+
+            return false;
+        }
+
+    }
+
+    public String extractRoleFromToken(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            String role = claims.get("role", String.class);
+            return role;
+        } catch (JwtException e) {
+            throw new JwtValidationException("failed to extract tole from jwt", e);
+        }
     }
 
     public static String extractToken(HttpServletRequest request) {
@@ -116,6 +153,7 @@ public class JwtUtil {
         }
         return null;
     }
+
 
     private static String getAuthorization(HttpServletRequest request) {
         return request.getHeader("Authorization");
@@ -129,12 +167,6 @@ public class JwtUtil {
     private boolean isTokenForLoginCheck(Claims claims) {
         return "loginCheck".equals(claims.get("purpose", String.class));
     }
-
-
-
-
-
-
 
 
 }

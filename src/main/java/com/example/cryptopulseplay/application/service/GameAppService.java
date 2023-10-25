@@ -158,7 +158,6 @@ public class GameAppService {
             // -> 해당부분을 별도의 트랭ㄴ잭션으로 분리
         }
 
-        // 배치 처리 적용
         finishGameV2(gamesToReword);
 
 
@@ -169,6 +168,10 @@ public class GameAppService {
         createRewordForGame(game);
         finishGameForUser(game.getUser().getId());
     }
+
+    /**
+     * 배치처리 적용
+     */
 
     @Transactional
     public void finishGameV2(List<Game> games) {

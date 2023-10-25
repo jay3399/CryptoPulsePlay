@@ -25,9 +25,9 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
-                        authz -> authz.requestMatchers(
-                                        (req) -> permitAllEndpointSet.contains(req.getRequestURI()) || req.getRequestURI().startsWith("/notifications/"))
+                        authz -> authz.requestMatchers((req) -> permitAllEndpointSet.contains(req.getRequestURI()) || req.getRequestURI().startsWith("/notifications/"))
                                 .permitAll()
+                                .requestMatchers((req) -> req.getRequestURI().startsWith("/admin")).hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, FilterSecurityInterceptor.class)
                 .exceptionHandling(

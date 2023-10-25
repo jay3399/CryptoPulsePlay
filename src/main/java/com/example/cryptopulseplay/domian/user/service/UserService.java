@@ -36,7 +36,7 @@ public class UserService {
     @Transactional
     public String verifyEmail(String token) {
 
-        String email = jwtUtil.getEmailFromToken(token).getSubject();
+        String email = jwtUtil.getEmailFromToken(token);
 
         User user = redisUtil.getUser(email);
 

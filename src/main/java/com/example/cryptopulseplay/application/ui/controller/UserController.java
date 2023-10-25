@@ -1,5 +1,6 @@
 package com.example.cryptopulseplay.application.ui.controller;
 
+import com.example.cryptopulseplay.application.exception.custom.JwtValidationException;
 import com.example.cryptopulseplay.application.ui.request.PointRequest;
 import com.example.cryptopulseplay.application.ui.request.SignInRequest;
 import com.example.cryptopulseplay.application.ui.request.SignInRequest.DeviceInfo;
@@ -8,6 +9,7 @@ import com.example.cryptopulseplay.application.service.UserAppService;
 import com.example.cryptopulseplay.domian.shared.util.JwtUtil;
 import com.example.cryptopulseplay.domian.user.model.User;
 import com.example.cryptopulseplay.domian.user.service.UserService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,12 +51,22 @@ public class UserController {
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
 
+        try {
+            jwtUtil.validateTokenForMail(token);
+        } catch (JwtException e) {
+            throw new JwtValidationException("JWT for Email Validation Exception", e);
+        }
+
         String response = userAppService.verifyEmail(token);
 
         return ResponseEntity.ok(response);
 
     }
 
+
+    /**
+     * 이제 필요가 없다 .시큐리티상에서 적용 - > JWT Filter
+     */
     @GetMapping("/verifyLoginToken")
     public ResponseEntity<String> verifyLoginToken(@RequestParam String token) {
 
