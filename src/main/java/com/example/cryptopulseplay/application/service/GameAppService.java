@@ -169,6 +169,7 @@ public class GameAppService {
         finishGameForUser(game.getUser().getId());
     }
 
+
     /**
      * 배치처리 적용
      */

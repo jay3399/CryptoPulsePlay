@@ -65,7 +65,7 @@ public class UserController {
 
 
     /**
-     * 이제 필요가 없다 .시큐리티상에서 적용 - > JWT Filter
+     * ?
      */
     @GetMapping("/verifyLoginToken")
     public ResponseEntity<String> verifyLoginToken(@RequestParam String token) {
