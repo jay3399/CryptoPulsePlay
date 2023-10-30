@@ -65,8 +65,7 @@ public class UserAppService {
 
         String accessToken = userService.verifyEmail(token);
 
-        return accessToken;
-
+        return getAlert(accessToken);
     }
 
     @Transactional

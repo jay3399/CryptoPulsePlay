@@ -51,7 +51,7 @@ public class User implements Serializable {
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Game> games = new ArrayList<>();
@@ -60,6 +60,7 @@ public class User implements Serializable {
     private User(String email, DeviceInfo deviceInfo) {
         this.email = email;
         this.deviceInfo = deviceInfo;
+        this.role = Role.USER;
     }
 
     private static final long VERIFICATION_EXPIRATION_HOURS = 24;

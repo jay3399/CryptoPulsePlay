@@ -80,8 +80,7 @@ public class RewordAppService {
         int pageNumber = 0;
         Page<Reword> rewordPage;
 
-        do {rewordPage = rewordService.findRewordOnPendingV2(RewordStatus.PENDING,
-                    PageRequest.of(pageNumber, PAGE_SIZE));
+        do {rewordPage = rewordService.findRewordOnPendingV2(RewordStatus.PENDING, PageRequest.of(pageNumber, PAGE_SIZE));
             processRewords(rewordPage.getContent());
             pageNumber++;
         } while (rewordPage.hasNext());

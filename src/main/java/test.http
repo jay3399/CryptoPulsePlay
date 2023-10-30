@@ -1,12 +1,10 @@
-POST http://localhost:8080/game
+POST http://localhost:8080/addPoint
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb3N3eHhAZ21haWwuY29tIiwidXNlcklkIjoxLCJwdXJwb3NlIjoibG9naW5DaGVjayIsImV4cCI6MTY5Nzc5NTMzM30.JE4t3O7T2fk_fRdArk4l5aNR9FT8Fk7MYcCyMfHAQ_8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjMGNjODZhNS1kMDRkLTRmYjktOWRmOC0zNGMwNzllNzY5MmEiLCJpc3MiOiJDcnlwdG9QdWxzZVBsYXkiLCJhdWQiOiJVc2VyT25QbGF5Iiwic3ViIjoiam9zd3h4QGdtYWlsLmNvbSIsInVzZXJJZCI6MSwicHVycG9zZSI
 
 {
-  "amount": 300,
-  "direction": "DOWN"
+  "point": 30000
 }
-
 
 
 

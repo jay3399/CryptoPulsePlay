@@ -84,9 +84,13 @@ public class UserController {
     @PostMapping("/addPoint")
     public ResponseEntity<?> updatePoint(HttpServletRequest request, @RequestBody PointRequest pointRequest) {
 
+        System.out.println("point. = " + pointRequest.getPoint());
+
         String token = JwtUtil.extractToken(request);
 
         Long userId = jwtUtil.getUserIdFromToken(token);
+
+        System.out.println("userId = " + userId);
 
         userService.addPoint(userId, pointRequest.getPoint());
 

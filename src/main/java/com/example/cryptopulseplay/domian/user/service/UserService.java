@@ -52,7 +52,7 @@ public class UserService {
 
         user.updateEmailVerifiedDateAndRefreshToken(refreshToken);
 
-        userRepository.save(user);
+         userRepository.save(user);
 
         return jwtUtil.generateToken(user, "loginCheck");
 

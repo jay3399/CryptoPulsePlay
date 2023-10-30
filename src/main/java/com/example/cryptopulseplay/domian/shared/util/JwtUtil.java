@@ -7,11 +7,14 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,6 +29,7 @@ public class JwtUtil {
 
 
     public String generateToken(User user, String purpose) {
+
 
         try {
             return Jwts.builder()
@@ -96,6 +100,20 @@ public class JwtUtil {
         }
     }
 
+    public UserDetails getUserDetails(String token) {
+        Claims claims = getClaims(token);
+
+        String email = claims.getSubject();
+        String role = (String) claims.get("role");
+
+        return org.springframework.security.core.userdetails.User.builder().username(email)
+                .password("").authorities(
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)))
+                .build();
+
+
+    }
+
 
     public String getEmailFromToken(String token) {
 
@@ -106,6 +124,8 @@ public class JwtUtil {
         }
 
     }
+
+
 
 
     public boolean validateTokenForMail(String token) {
