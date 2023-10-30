@@ -26,7 +26,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/", "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint");
+    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/",
+            "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint");
 
 
     @Override
@@ -44,7 +45,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = JwtUtil.extractToken(request);
 
-
         if (token != null) {
 
             try {
@@ -55,11 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 String issuer = claims.getIssuer();
 
-                System.out.println("issuer = " + issuer);
-
                 String audience = claims.getAudience();
-
-                System.out.println("audience = " + audience);
 
                 if (!"CryptoPulsePlay".equals(issuer) || !"UserOnPlay".equals(audience)) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -67,9 +63,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
 
                 UserDetails userDetails = jwtUtil.getUserDetails(token);
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);
-
 
                 filterChain.doFilter(request, response);
 
@@ -83,6 +79,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
 
-
     }
+
+
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//            throws ServletException, IOException {
+//
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//
+//            String token = JwtUtil.extractToken(request);
+//            if (token != null && jwtUtil.validateToken(token)) {
+//                Claims claims = jwtUtil.getClaims(token);
+//
+//                String issuer = claims.getIssuer();
+//                String audience = claims.getAudience();
+//
+//                if ("CryptoPulsePlay".equals(issuer) && "UserOnPlay".equals(audience)) {
+//                    UserDetails userDetails = jwtUtil.getUserDetails(token);
+//                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+//                            userDetails, null, userDetails.getAuthorities());
+//                    SecurityContextHolder.getContext().setAuthentication(auth);
+//                } else {
+//                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                    return;
+//                }
+//            }
+//        }
+//
+//        filterChain.doFilter(request, response);
+//    }
+
 }
