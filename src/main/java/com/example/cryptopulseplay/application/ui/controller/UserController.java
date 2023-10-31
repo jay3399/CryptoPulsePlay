@@ -82,7 +82,8 @@ public class UserController {
     }
 
     @PostMapping("/addPoint")
-    public ResponseEntity<?> updatePoint(HttpServletRequest request, @RequestBody PointRequest pointRequest) {
+    public ResponseEntity<?> updatePoint(HttpServletRequest request,
+            @RequestBody PointRequest pointRequest) {
 
         System.out.println("point. = " + pointRequest.getPoint());
 
@@ -99,5 +100,8 @@ public class UserController {
 
     }
 
-
+    @GetMapping("/test")
+    public String test() {
+        return "sucess!";
+    }
 }

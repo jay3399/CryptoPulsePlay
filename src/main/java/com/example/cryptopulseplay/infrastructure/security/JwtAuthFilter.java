@@ -26,89 +26,35 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-    private final Set<String> permitAllEndpointSet = Set.of("/signIn", "/verifyEmail", "/",
-            "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint");
-
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String path = request.getRequestURI();
+        if (authentication == null || !authentication.isAuthenticated()) {
 
-        if (permitAllEndpointSet.contains(path)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+            String token = JwtUtil.extractToken(request);
 
-        String token = JwtUtil.extractToken(request);
-
-        if (token != null) {
-
-            try {
-
-                jwtUtil.validateToken(token);
-
+            if (token != null && jwtUtil.validateToken(token)) {
                 Claims claims = jwtUtil.getClaims(token);
 
                 String issuer = claims.getIssuer();
-
                 String audience = claims.getAudience();
 
-                if (!"CryptoPulsePlay".equals(issuer) || !"UserOnPlay".equals(audience)) {
+                if ("CryptoPulsePlay".equals(issuer) && "UserOnPlay".equals(audience)) {
+                    UserDetails userDetails = jwtUtil.getUserDetails(token);
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } else {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
-
-                UserDetails userDetails = jwtUtil.getUserDetails(token);
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(auth);
-
-                filterChain.doFilter(request, response);
-
-
-            } catch (JwtException e) {
-
-                throw new JwtValidationException("JWT Validation Exception", e);
-
             }
         }
 
         filterChain.doFilter(request, response);
-
     }
-
-
-//    @Override
-//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-//            throws ServletException, IOException {
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//
-//            String token = JwtUtil.extractToken(request);
-//            if (token != null && jwtUtil.validateToken(token)) {
-//                Claims claims = jwtUtil.getClaims(token);
-//
-//                String issuer = claims.getIssuer();
-//                String audience = claims.getAudience();
-//
-//                if ("CryptoPulsePlay".equals(issuer) && "UserOnPlay".equals(audience)) {
-//                    UserDetails userDetails = jwtUtil.getUserDetails(token);
-//                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-//                            userDetails, null, userDetails.getAuthorities());
-//                    SecurityContextHolder.getContext().setAuthentication(auth);
-//                } else {
-//                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                    return;
-//                }
-//            }
-//        }
-//
-//        filterChain.doFilter(request, response);
-//    }
 
 }

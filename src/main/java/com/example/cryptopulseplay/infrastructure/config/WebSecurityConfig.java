@@ -1,5 +1,4 @@
 package com.example.cryptopulseplay.infrastructure.config;
-
 import com.example.cryptopulseplay.application.exception.custom.SecurityRedirectionException;
 import com.example.cryptopulseplay.infrastructure.security.JwtAuthFilter;
 import java.io.IOException;
@@ -24,15 +23,12 @@ public class WebSecurityConfig {
 
         httpSecurity.csrf(csrf -> csrf.disable()).sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
-                authorizeHttpRequests(
-                        authz -> authz
-                                .requestMatchers("/signIn", "/verifyEmail", "/", "/index.html",
-                                        "/verifyLoginToken", "/btc-price", "/game", "/addPoint",
-                                        "/notifications/**")
+                authorizeHttpRequests(authz -> authz
+                                .requestMatchers("/signIn", "/verifyEmail", "/", "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint", "/test", "/notifications/**")
                                 .permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
-                .addFilterAfter(jwtAuthFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
                 .exceptionHandling(
                         e -> e.authenticationEntryPoint((request, response, authException)
                                         -> {
@@ -51,22 +47,5 @@ public class WebSecurityConfig {
         return httpSecurity.build();
 
     }
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
-//                .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 상태 없음 설정
-//                .authorizeHttpRequests(authz -> authz
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/signIn", "/verifyEmail", "/", "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint", "/notifications/**").permitAll()
-//                        .anyRequest().authenticated())
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-//
-
 
 }
