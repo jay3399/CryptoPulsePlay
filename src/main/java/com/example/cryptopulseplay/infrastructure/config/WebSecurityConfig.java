@@ -24,7 +24,7 @@ public class WebSecurityConfig {
         httpSecurity.csrf(csrf -> csrf.disable()).sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
                 authorizeHttpRequests(authz -> authz
-                                .requestMatchers("/signIn", "/verifyEmail", "/", "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint", "/test", "/notifications/**")
+                                .requestMatchers("/signIn", "/verifyEmail", "/", "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint", "/test", "/notifications/**" ,"/currentUser")
                                 .permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
