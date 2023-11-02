@@ -51,6 +51,7 @@ public class UserController {
         return signInResponse.createResponse();
     }
 
+
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
 
@@ -112,6 +113,8 @@ public class UserController {
     public String getCurrentUser() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        System.out.println("authentication = " + authentication);
 
         if (authentication == null || !authentication.isAuthenticated()) {
             return "error";
