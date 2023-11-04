@@ -14,13 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
-/**
- * 추가
- *
- */
-
-
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

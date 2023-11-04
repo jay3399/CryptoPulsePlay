@@ -89,13 +89,10 @@ public class UserController {
     public ResponseEntity<?> updatePoint(HttpServletRequest request,
             @RequestBody PointRequest pointRequest) {
 
-        System.out.println("point. = " + pointRequest.getPoint());
 
         String token = JwtUtil.extractToken(request);
 
         Long userId = jwtUtil.getUserIdFromToken(token);
-
-        System.out.println("userId = " + userId);
 
         userService.addPoint(userId, pointRequest.getPoint());
 
@@ -104,17 +101,11 @@ public class UserController {
 
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "sucess!";
-    }
-
     @GetMapping("/currentUser")
     public String getCurrentUser() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        System.out.println("authentication = " + authentication);
 
         if (authentication == null || !authentication.isAuthenticated()) {
             return "error";
@@ -122,7 +113,6 @@ public class UserController {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        System.out.println("userDetails = " + userDetails);
 
         System.out.println("userDetails = " + userDetails.getUsername());
 
