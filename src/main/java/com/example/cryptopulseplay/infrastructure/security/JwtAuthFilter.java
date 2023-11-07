@@ -22,10 +22,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
-
-
 
         if (isAuthenticated()) {
             System.out.println("이미인증");
@@ -34,10 +33,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = JwtUtil.extractToken(request);
-//
-        System.out.println("FilterToken = " + token);
-
-
 
         if (token == null || !jwtUtil.validateToken(token)) {
             filterChain.doFilter(request, response);
@@ -52,12 +47,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         UserDetails userDetails = jwtUtil.getUserDetails(token);
 
-
         setAuth(userDetails);
 
-
         filterChain.doFilter(request, response);
-
 
 
     }
@@ -96,8 +88,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 
 }
-
-
 
 //    @Override
 //    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

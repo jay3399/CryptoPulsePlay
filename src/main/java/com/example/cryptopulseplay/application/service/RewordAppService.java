@@ -34,16 +34,10 @@ public class RewordAppService {
         for (Reword reword : rewordOnPending) {
             reword.applyReword();
             Long userId = reword.getUser().getId();
-            Notification notification = new Notification(
-                    "you've received reword : " + reword.getAmount(), userId);
+            Notification notification = new Notification("you've received reword : " + reword.getAmount(), userId);
             notificationService.notify(notification);
         }
 
-        /**
-         * 트렌젝션은 기본적으로 단일 스레드에서 관리된다 .
-         * 하지만 병렬스트림은 여러 스레드에서 관리되기떄문에 트랜잭션범위,관리 문제가 발생할수있음.
-         */
-//        rewords.parallelStream().forEach(Reword::applyReword);
 
     }
 
@@ -97,8 +91,7 @@ public class RewordAppService {
         for (Reword reword : rewords) {
             reword.applyReword();
             Long id = reword.getUser().getId();
-            Notification notification = new Notification(
-                    "you've received reword : " + reword.getAmount(), id);
+            Notification notification = new Notification("you've received reword : " + reword.getAmount(), id);
             notification.notify();
 
             if (++count % BATCH_SIZE == 0) {
@@ -115,3 +108,10 @@ public class RewordAppService {
 
 
 }
+
+
+/**
+ * 트렌젝션은 기본적으로 단일 스레드에서 관리된다 .
+ * 하지만 병렬스트림은 여러 스레드에서 관리되기떄문에 트랜잭션범위,관리 문제가 발생할수있음.
+ */
+//        rewords.parallelStream().forEach(Reword::applyReword);

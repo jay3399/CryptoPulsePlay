@@ -52,7 +52,22 @@ public class GameAppService {
      * 병렬로 처리 Retry - 실패한 작업에대해 재시도 or 특정 횟수이상 실패하면 건너뛰는 로직 실행
      */
 
-
+    /**
+     * 목표 :
+     * Game 을 영속화 시키지않고 Redis 에 저장
+     * 그리고 게임결과를 내는 시점에서 -> 이벤트발행 ->  해당 게임에대한 리워드를 저장
+     *
+     * 이전 : 이벤트를 발행 -> gameId 를넣고 -> gameId를 가지고 다시 게임 객체를 디비에서 가져온뒤 리워드를 생성
+     * -> 애초에 영속화된 상태가 아니라 ID 조차 존재하지않음, 물론 디비에도 없는상태
+     *
+     * 이후:
+     * 1. 영속화 시키지않고 Redis 에 저장하는것은 그대로 유지 -> gameID는 영속화를 못시키니 그냥 Game 자체를 이벤트객체에 넘겨준다
+     * 2. 이벤트가 발행되면 , 이벤트에 게임객체를 넣은뒤 해당 게임객체를 리워드를 생성할때 전파 기능을 이용해서 한번에 영속화시킨다.
+     *
+     * + 이벤트발행로직을 도메인객체에서 분리하고 , 도메인은 이벤트객체만을 발행한다.
+     *
+     * -> 문제점 , 이벤트가 발행될떄마다 디비에 save 가 날라간다.
+     */
     @Transactional
     public void calculateGameResult(Direction direction) {
 
@@ -63,41 +78,18 @@ public class GameAppService {
             return;
         }
 
-        /**
-         * 목표 :
-         * Game 을 영속화 시키지않고 Redis 에 저장
-         * 그리고 게임결과를 내는 시점에서 -> 이벤트발행 ->  해당 게임에대한 리워드를 저장
-         *
-         * 이전 : 이벤트를 발행 -> gameId 를넣고 -> gameId를 가지고 다시 게임 객체를 디비에서 가져온뒤 리워드를 생성
-         * -> 애초에 영속화된 상태가 아니라 ID 조차 존재하지않음, 물론 디비에도 없는상태
-         *
-         * 이후:
-         * 1. 영속화 시키지않고 Redis 에 저장하는것은 그대로 유지 -> gameID는 영속화를 못시키니 그냥 Game 자체를 이벤트객체에 넘겨준다
-         * 2. 이벤트가 발행되면 , 이벤트에 게임객체를 넣은뒤 해당 게임객체를 리워드를 생성할때 전파 기능을 이용해서 한번에 영속화시킨다.
-         *
-         * + 이벤트발행로직을 도메인객체에서 분리하고 , 도메인은 이벤트객체만을 발행한다.
-         *
-         * -> 문제점 , 이벤트가 발행될떄마다 디비에 save 가 날라간다.
-         *
-         *
-         *
-         *
-         */
-
         for (String gameKey : gameKeys) {
 
             Game game = redisUtil.getGame(gameKey);
 
-            Direction userDirection = game.getDirection();
-
             GameResultEvent gameResultEvent = game.calculateOutcome(direction);
 
             domainEventPublisher.publish(gameResultEvent);
-
-
         }
 
     }
+
+
 
     /**
      * 이벤트헨들러 전략 사용 x 트렌젝션 문제때문에 사용하기가 번거로움 + 카운트 기능까지 포함하려면 더더욱.
@@ -134,7 +126,6 @@ public class GameAppService {
 
     }
 
-    @Transactional
     public void calculateGameResultV3(PriceRecord priceRecord) {
 
         Set<String> gameKeys = redisUtil.gameKeys();

@@ -89,7 +89,6 @@ public class UserController {
     public ResponseEntity<?> updatePoint(HttpServletRequest request,
             @RequestBody PointRequest pointRequest) {
 
-
         String token = JwtUtil.extractToken(request);
 
         Long userId = jwtUtil.getUserIdFromToken(token);
@@ -106,17 +105,25 @@ public class UserController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-
         if (authentication == null || !authentication.isAuthenticated()) {
             return "error";
         }
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-
         System.out.println("userDetails = " + userDetails.getUsername());
 
         return userDetails.getUsername();
 
     }
+
+
+    @GetMapping("/admin/test")
+    public String getAdmin() {
+
+        return "pass";
+
+    }
+
+
 }
