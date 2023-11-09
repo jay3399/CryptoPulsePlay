@@ -1,4 +1,5 @@
 package com.example.cryptopulseplay.infrastructure.config;
+
 import com.example.cryptopulseplay.application.exception.custom.SecurityRedirectionException;
 import com.example.cryptopulseplay.infrastructure.security.JwtAuthFilter;
 import java.io.IOException;
@@ -24,10 +25,13 @@ public class WebSecurityConfig {
         httpSecurity.csrf(csrf -> csrf.disable()).sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
                 authorizeHttpRequests(authz -> authz
-                                .requestMatchers("/signIn", "/verifyEmail", "/", "/index.html", "/verifyLoginToken", "/btc-price", "/game", "/addPoint", "/test", "/notifications/**" ,"/currentUser")
-                                .permitAll()
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated())
+                        .requestMatchers("/signIn", "/verifyEmail", "/", "/index.html",
+                                "/verifyLoginToken", "/btc-price", "/game", "/addPoint", "/test",
+                                "/notifications/**", "/currentUser")
+                        .permitAll()
+                        .requestMatchers("/premium-content/**").hasAuthority("GRADE_GOLD")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
                 .exceptionHandling(
                         e -> e.authenticationEntryPoint((request, response, authException)

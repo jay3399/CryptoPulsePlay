@@ -53,6 +53,9 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private UserGrade userGrade = UserGrade.SILVER;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Game> games = new ArrayList<>();
 
@@ -138,7 +141,17 @@ public class User implements Serializable {
     //Reword 지급
     public void updatePoints(int point) {
         this.point += point;
+        updateGrade();
+    }
 
+    private void updateGrade() {
+        if (this.point >= 1000) {
+            this.userGrade = UserGrade.GOLD;
+        } else if (this.point >= 500) {
+            this.userGrade = UserGrade.SILVER;
+        } else {
+            this.userGrade = UserGrade.BRONZE;
+        }
     }
 
     private void checkParticipationStatus() {

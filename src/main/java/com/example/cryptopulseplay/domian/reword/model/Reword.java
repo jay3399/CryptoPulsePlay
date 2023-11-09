@@ -35,7 +35,7 @@ public class Reword {
     private User user;
 
     @JoinColumn(name = "gameId")
-    @OneToOne(fetch = FetchType.LAZY , cascade =  CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Game game;
 
 
@@ -57,8 +57,6 @@ public class Reword {
     }
 
 
-
-
     public void applyReword() {
         try {
             this.user.updatePoints(amount);
@@ -77,7 +75,6 @@ public class Reword {
 
         return new Reword(game);
 
-
 //        아래는 reword 의 상태를 변경한다. 상태를 변경하지말고 새로운 인스턴스를 반환하고 외부에서 생성자생성을 막는다.
 
 //        Reword reword = new Reword();
@@ -85,7 +82,6 @@ public class Reword {
 //        reword.set(game, outcome);
 //
 //        return reword;
-
 
     }
 

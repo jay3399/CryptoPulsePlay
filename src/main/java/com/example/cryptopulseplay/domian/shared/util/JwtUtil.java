@@ -7,12 +7,15 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -40,6 +43,7 @@ public class JwtUtil {
                     .claim("userId", user.getId())
                     .claim("purpose", purpose)
                     .claim("role", user.getRole().name())
+                    .claim("grade", user.getUserGrade())
                     .setExpiration(
                             new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)))
                     .signWith(SignatureAlgorithm.HS256, secret)
@@ -105,10 +109,15 @@ public class JwtUtil {
 
         String email = claims.getSubject();
         String role = (String) claims.get("role");
+        String grade = (String) claims.get("grade");
+
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+
+        authorityList.add(new SimpleGrantedAuthority("ROLE_" + role));
+        authorityList.add(new SimpleGrantedAuthority("GRADE_" + grade));
 
         return org.springframework.security.core.userdetails.User.builder().username(email)
-                .password("").authorities(
-                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)))
+                .password("").authorities(authorityList)
                 .build();
 
 
