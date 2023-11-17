@@ -46,7 +46,10 @@ public class User implements Serializable {
 
     private LocalDateTime emailVerificationDate;
 
+    private LocalDateTime lastEmailVerification;
+
     private boolean isParticipatingInGame = false;
+
 
     private String refreshToken;
 
@@ -110,6 +113,19 @@ public class User implements Serializable {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+
+    public void updateLastEmailVerificationRequestTime() {
+        this.lastEmailVerification = LocalDateTime.now();
+    }
+    public boolean isEmailVerificationLimited() {
+
+        if (lastEmailVerification == null) {
+            return false;
+        }
+
+        return Duration.between(lastEmailVerification, LocalDateTime.now()).toMinutes() < 15;
     }
 
 

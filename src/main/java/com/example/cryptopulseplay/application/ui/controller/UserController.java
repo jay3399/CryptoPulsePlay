@@ -35,18 +35,15 @@ public class UserController {
 
 
     @PostMapping("/signIn")
-    public ResponseEntity<?> signInOrUp(@Valid @RequestBody SignInRequest signInRequest) {
+    public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest signInRequest) {
 
         String email = signInRequest.getEmail();
 
         DeviceInfo deviceInfo = signInRequest.getDeviceInfo();
 
-        // 캡슐화 ++ 도메인 중심 . 상태 노출x getter x
         User.DeviceInfo userDeviceInfo = deviceInfo.toDomain();
 
-//        User.DeviceInfo userDeviceInfo = new User.DeviceInfo(deviceInfo.getBrowser(), deviceInfo.getPlatform());
-
-        SignInResponse signInResponse = userAppService.signInOrUp(email, userDeviceInfo);
+        SignInResponse signInResponse = userAppService.signIn(email, userDeviceInfo);
 
         return signInResponse.createResponse();
     }
@@ -116,6 +113,7 @@ public class UserController {
         return userDetails.getUsername();
 
     }
+
 
 
     @GetMapping("/admin/test")

@@ -26,23 +26,26 @@ public class UserAppService {
     private static final String LOGIN_CHECK = "loginCheck";
 
 
-    public SignInResponse signInOrUp(String email, DeviceInfo deviceInfo) {
+    public SignInResponse signIn(String email, DeviceInfo deviceInfo) {
 
         User user = userService.findByEmail(email).orElse(User.create(email, deviceInfo));
 
-        redisUtil.setUserByEmail(user);
 
         // 이메일 입력후 , 제출시 서버에서 판단후
         // 1.신규회원인지
         // 2.혹은 기존회원이지만 다른기기로이거나 , 이메일 인증기간이 특정시점을 넘어간 회원인지.
         // 둘을 구분해서 , 메세지로 출력.
 
-        if (user.isReauthenticate(deviceInfo)) {
+        if (user.isReauthenticate(deviceInfo) && !user.isEmailVerificationLimited()) {
 
             emailService.sendVerificationEmail(user);
 
+            user.updateLastEmailVerificationRequestTime();
+
             return new VerificationMessageResponse(user);
         }
+
+        redisUtil.setUserByEmail(user);
 
         // 인증자체가 필요없는경우 , 기기도 유효하고 신규회원도 아닌경우
         String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);

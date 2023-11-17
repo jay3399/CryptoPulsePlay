@@ -7,12 +7,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -29,11 +26,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        if (isAuthenticated()) {
-            System.out.println("이미인증");
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (isAuthenticated()) {
+//            System.out.println("0");
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         String token = JwtUtil.extractToken(request);
 
@@ -57,10 +54,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     }
 
-    private boolean isAuthenticated() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null && authentication.isAuthenticated();
-    }
+    /**
+     *  현재는 , 무상태 세션정책을 사용중.
+     *
+     *  but , 다중필터체인이라던지 , 추가적인 세션기반인증을 혼합해서 사용하거나 , 인증후 처리를 할때는 필요하다.
+     */
+
+//    private boolean isAuthenticated() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        return authentication != null && authentication.isAuthenticated();
+//    }
 
     private boolean isValidToken(String token, HttpServletResponse response) {
 
