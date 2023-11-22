@@ -34,6 +34,11 @@ public class UserController {
     private final JwtUtil jwtUtil;
 
 
+    /**
+     * 회원가입 및 로그인
+     * @param signInRequest 이메일 , 디바이스정보.
+     * @return 로그인 토큰 발행.
+     */
     @PostMapping("/signIn")
     public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest signInRequest) {
 
@@ -49,6 +54,11 @@ public class UserController {
     }
 
 
+    /**
+     * 이메일 인증링크 엔드포인트
+     * @param token 사용자 이메일 정보.
+     * @return
+     */
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
 
@@ -66,7 +76,7 @@ public class UserController {
 
 
     /**
-     * ?
+     * 필요없어짐.
      */
     @GetMapping("/verifyLoginToken")
     public ResponseEntity<String> verifyLoginToken(@RequestParam String token) {
@@ -81,6 +91,14 @@ public class UserController {
 
 
     }
+
+
+
+
+
+
+
+    // 테스트 호출용  ----------------------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/addPoint")
     public ResponseEntity<?> updatePoint(HttpServletRequest request,
@@ -122,6 +140,8 @@ public class UserController {
         return "pass";
 
     }
+
+   //----------------------------------------------------------------------------------------------------------------------------
 
 
 }

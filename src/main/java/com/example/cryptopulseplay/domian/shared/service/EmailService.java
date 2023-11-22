@@ -29,6 +29,8 @@ public class EmailService {
      * MailException -> 스프링 JavaMail 의 최상위 예외  -> javaMailSender MessagingException -> JavaMail API
      * 발생예외 , 메세지 작성 및 전송중 발생 0 -> MimeMessageHelper
      */
+
+
     @Async
     public void sendVerificationEmail(User user) {
 
@@ -69,34 +71,6 @@ public class EmailService {
 
 
     }
-
-//    public String verifyEmail(String token) {
-//
-//        String email = jwtUtil.validateToken(token).getSubject();
-//
-//        User user = redisUtil.getUser(email);
-//
-//        String emailInRedis = redisUtil.getEmail(token);
-//
-//        if (emailInRedis == null || !email.equals(email)) {
-//            return null;
-//            //예외처리
-//        }
-//
-//        if (!user.isEmailVerified()) {
-//
-//            user.markEmailAsVerified(user, jwtUtil.generateRefreshToken(user));
-//
-//            userRepository.save(user);
-//        }
-//
-//        return jwtUtil.generateToken(user, "loginCheck");
-//
-//    }
-
-//    private final UserRepository userRepository;
-//    private final JwtUtil jwtUtil;
-//    private final RedisTemplate redisTemplate;
 
 
 }

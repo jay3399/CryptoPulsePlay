@@ -43,6 +43,11 @@ public class RewordService {
      * + 다시 생각해보니 , 양방향 매핑은 내가 나중에 편하려고 해놓은거긴한데 그만큼 귀찮은 부분이 생겨서 일단 처음엔 단방향으로 설게를 해놓는게 맞는듯하다 .
      */
 
+
+    /**
+     * 게임에따른 , 리워드를 생성.
+     * @param game
+     */
     public void createReword(Game game) {
 
         User user = userRepository.findById(game.getUser().getId()).get();

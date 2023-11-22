@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -26,22 +25,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-//        if (isAuthenticated()) {
-//            System.out.println("0");
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-
         String token = JwtUtil.extractToken(request);
 
         if (token == null || !jwtUtil.validateToken(token)) {
             filterChain.doFilter(request, response);
-            System.out.println("1");
             return;
         }
 
         if (!isValidToken(token, response)) {
-            System.out.println("2");
             return;
         }
 
@@ -54,16 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     }
 
-    /**
-     *  현재는 , 무상태 세션정책을 사용중.
-     *
-     *  but , 다중필터체인이라던지 , 추가적인 세션기반인증을 혼합해서 사용하거나 , 인증후 처리를 할때는 필요하다.
-     */
 
-//    private boolean isAuthenticated() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return authentication != null && authentication.isAuthenticated();
-//    }
 
     private boolean isValidToken(String token, HttpServletResponse response) {
 
@@ -82,7 +64,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private void setAuth(UserDetails userDetails) {
 
-        System.out.println("userDetails.getUsername() = " + userDetails.getUsername());
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
@@ -94,6 +75,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 
 }
+
+
+/**
+ *  현재는 , 무상태 세션정책을 사용중.
+ *  but , 다중필터체인이라던지 , 추가적인 세션기반인증을 혼합해서 사용하거나 , 인증후 처리를 할때는 필요하다.
+ */
+
+
+//        if (isAuthenticated()) {
+//            System.out.println("0");
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+
+
+//    private boolean isAuthenticated() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        return authentication != null && authentication.isAuthenticated();
+//    }
+
 
 //    @Override
 //    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

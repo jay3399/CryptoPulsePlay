@@ -22,10 +22,14 @@ public class RewordAppService {
     private final EntityManager entityManager;
 
     private static final int BATCH_SIZE = 100;
-
     private static final int PAGE_SIZE = 1000;
 
 
+    /**
+     * 이전에 생성한 리워드들을 가져옵니다.
+     * 리워드에따라 , 유저의 포인트를 업데이트합니다 .
+     * 해당 유저에게 포인트 업데이트 알림을 보냅니다.
+     */
     @Transactional
     public void payReword() {
 
@@ -43,6 +47,8 @@ public class RewordAppService {
 
 
     /**
+     * 문제-
+     *
      * for loop 내부에 리워드지급로직메서드를 생성 분리 하여,  트랜잭션 범위를 줄일수있다.
      * <p>
      * 하지만 , 그렇게하면 JPA 의 지연쓰기 기능을 사용하지못한다.
@@ -53,8 +59,6 @@ public class RewordAppService {
      * <p>
      * -> 작은 트랜잭션 단위로 나누면서 + 배치처리를 이용해서 해겷한다.
      */
-
-
     @Transactional
     public void payRewordV2() {
 

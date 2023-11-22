@@ -17,6 +17,11 @@ public class NotificationController {
     private final NotificationService notificationService;
 
 
+    /**
+     * 게임 리워드 지급시 알림.
+     * @param userId
+     * @return
+     */
     @GetMapping(value = "/notifications/{userId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Notification> getUserNotifications(@PathVariable Long userId) {
 

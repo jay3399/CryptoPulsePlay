@@ -23,6 +23,9 @@ public class BtcPriceController {
     private final BtcPriceService btcPriceService;
 
 
+    /**
+     * @return API 이용 30초마다 가격호출.
+     */
     @GetMapping(value = "/btc-price" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<BitcoinPrice> getBtcPrice() {
 

@@ -72,11 +72,3 @@ public class Game implements Serializable {
 
 
 }
-
-
-
-//    public void setUser(User user) {
-//        this.user = user;
-//        user.getGames().add(this);
-//    }
-//

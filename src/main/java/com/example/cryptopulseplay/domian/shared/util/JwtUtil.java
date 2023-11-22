@@ -32,7 +32,6 @@ public class JwtUtil {
 
     public String generateToken(User user, String purpose) {
 
-
         try {
             return Jwts.builder()
                     .setId(UUID.randomUUID().toString())
@@ -133,8 +132,6 @@ public class JwtUtil {
 
 
     }
-
-
 
 
     public boolean validateTokenForMail(String token) {

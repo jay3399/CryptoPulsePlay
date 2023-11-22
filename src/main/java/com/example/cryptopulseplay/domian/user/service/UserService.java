@@ -33,18 +33,25 @@ public class UserService {
     }
 
 
+    /**
+     * 로그인 / 가입 이메일인증
+     * 요청 토큰에서 꺼낸 이메일값과 , 레디스에 저장된 해당 토큰의 이메일을 비교후
+     * 성공시 ,Redis 에서 유저를 가져와서 이메일인증 상태 업데이트후, 유저를 디비에 영속화.
+     * @param token
+     * @return
+     */
     @Transactional
     public String verifyEmail(String token) {
 
         String email = jwtUtil.getEmailFromToken(token);
-
-        User user = redisUtil.getUser(email);
 
         String emailInRedis = redisUtil.getEmail(token);
 
         if (!email.equals(emailInRedis)) {
             throw new MailVerificationException();
         }
+
+        User user = redisUtil.getUser(email);
 
         String refreshToken = jwtUtil.generateRefreshToken(user);
 

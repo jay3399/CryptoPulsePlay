@@ -40,26 +40,27 @@ public class GameSchedulingService {
      * priceRecord 에 해당회차의 모든 게임들에서
      */
 
+
+
+    /**
+     * 정각에 게임이 시작이되면 ,
+     * 해당게임의 시작가격을 API 호출을통해 가져와서 , 해당 게임의 스타트가격을 저장합니다.
+     */
 //    @Scheduled(cron = "0 0 * * * *")
     @Scheduled(fixedRate = 20000)
     public void recordStartPrice() {
 
         double startPrice = btcPriceService.getCurrentPrice().block().getPrice();
         priceRecordService.createPriceRecord(startPrice);
-    }
-
-    //매시 59분 59초 , 마지막 가격기록후 게임결과 & 리워드 생성
-//    @Scheduled(cron = "59 59 * * * *")
-    @Scheduled(fixedRate = 40000)
-    public void recordEndPriceAndReword() {
-        double endPrice = btcPriceService.getCurrentPrice().block().getPrice();
-
-        Direction direction = priceRecordService.updatePriceRecord(endPrice);
-
-        gameAppService.calculateGameResult(direction);
 
     }
 
+    /**
+     * 게임이 끝나기 직전에
+     * 해당게임의 마지막 가격을 API 호출을 통해 가져온후 , 해당게임의 마지막 가격을 저장합니다.
+     * 마지막 가격을 저장하는 동시에 , 스타트가격과 마지막 가격을 비교하여 실제 방향 결과를 업데이트합니다 .
+     * 실제방향 direction 을 넘겨서 , 게임별 리워드를 만드는 로직을 실행합니다.
+     */
     @Scheduled(fixedRate = 40000)
     public void recordEndPriceAndRewordV2() {
         double endPrice = btcPriceService.getCurrentPrice().block().getPrice();
@@ -70,7 +71,24 @@ public class GameSchedulingService {
 
     }
 
-    // 매시 1분 리워드를 가지고 ,유저 포인트 업데이트 및 알림 전송
+
+
+    //    @Scheduled(cron = "59 59 * * * *")
+    @Scheduled(fixedRate = 40000)
+    public void recordEndPriceAndReword() {
+        double endPrice = btcPriceService.getCurrentPrice().block().getPrice();
+
+        Direction direction = priceRecordService.updatePriceRecord(endPrice);
+
+        gameAppService.calculateGameResult(direction);
+
+    }
+
+
+    /**
+     * 매시 1분 , 이전 게임의 결과에따라 보상을 지급하고 , 게임의 결과를 업데이트하고
+     * 포인트를 지급하며 , 결과를 알려줍니다 .
+     */
 //    @Scheduled
     @Scheduled(fixedRate = 20000)
     public void payReword() {

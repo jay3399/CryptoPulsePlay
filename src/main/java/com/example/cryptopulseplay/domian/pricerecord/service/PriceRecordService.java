@@ -17,6 +17,10 @@ public class PriceRecordService {
     private final RedisUtil redisUtil;
 
 
+    /**
+     * 게임 시작가격을 받고 , PriceRecord 를 생성후 Redis 에 저장.
+     * @param startPrice 시작가격.
+     */
     public void createPriceRecord(Double startPrice) {
 
         PriceRecord priceRecord = PriceRecord.create(startPrice);
@@ -25,6 +29,11 @@ public class PriceRecordService {
 
     }
 
+    /**
+     * 게임 끝나기전 , 마지막 가격을 받아서 게임의 결과 방향을 계산후 DB 에 저장.
+     * @param endPrice 마지막가격.
+     * @return 해당게임의 최종 결괴.
+     */
     @Transactional
     public Direction updatePriceRecord(Double endPrice) {
 
@@ -37,7 +46,6 @@ public class PriceRecordService {
         return priceRecord.getDirection();
 
     }
-
 
     @Transactional
     public PriceRecord updatePriceRecordV2(Double endPrice) {
@@ -52,19 +60,6 @@ public class PriceRecordService {
 
     }
 
-    @Transactional
-    public void updateCountOnDirection(Direction direction) {
-
-        PriceRecord priceRecord = priceRecordRepository.findTopByOrderByTimeStampDesc();
-
-        if (direction == Direction.UP) {
-            priceRecord.increaseLongCount();
-        } else {
-            priceRecord.increaseShortCount();
-        }
-
-
-    }
 
 
 }

@@ -26,17 +26,28 @@ public class UserAppService {
     private static final String LOGIN_CHECK = "loginCheck";
 
 
+    /**
+     * 이메일과 , 디바이스 정보를 받은후
+     * 유저가 디비에 있을시에는 그대로 가져오고 ,없을시 새로 생성합니다 .
+     * 디바이스 정보 , 이메일 인증시간 등을 비교해서 인증이 필요할시 이메일 인증메일을 보낸다.
+     * 이메일 인증이 필요없을시 , 로그인토큰을 만들고 반환.
+     * @param email 유저이메일
+     * @param deviceInfo 이메일 인증시 필요한 디바이스정보.
+     * @return
+     */
     public SignInResponse signIn(String email, DeviceInfo deviceInfo) {
 
         User user = userService.findByEmail(email).orElse(User.create(email, deviceInfo));
-
 
         // 이메일 입력후 , 제출시 서버에서 판단후
         // 1.신규회원인지
         // 2.혹은 기존회원이지만 다른기기로이거나 , 이메일 인증기간이 특정시점을 넘어간 회원인지.
         // 둘을 구분해서 , 메세지로 출력.
 
+
         if (user.isReauthenticate(deviceInfo) && !user.isEmailVerificationLimited()) {
+
+            redisUtil.setUserByEmail(user);
 
             emailService.sendVerificationEmail(user);
 
@@ -45,7 +56,6 @@ public class UserAppService {
             return new VerificationMessageResponse(user);
         }
 
-        redisUtil.setUserByEmail(user);
 
         // 인증자체가 필요없는경우 , 기기도 유효하고 신규회원도 아닌경우
         String loginToken = jwtUtil.generateToken(user, LOGIN_CHECK);
@@ -71,6 +81,7 @@ public class UserAppService {
         return getAlert(accessToken);
     }
 
+
     @Transactional
     public void finishGameOfUser(Long id) {
         User user = userService.findUser(id);
@@ -85,87 +96,4 @@ public class UserAppService {
                 + "setTimeout(function() { window.location.href = '/mainPage'; }, 5000);"
                 + "</script></html>";
     }
-
-    // -> User 클래스로 , 객체 자신의 상태를 스스로 판단하고 관리.객체가 하나의 목적 역할에 집중, 응집도 ++
-
-//    private boolean isReauthenticate(User user, String deviceInfo) {
-//
-//        if (!user.isEmailVerified()) {
-//            return true;
-//        }
-//
-//        if (isNewDevice(user, deviceInfo)) {
-//            return true;
-//        }
-//
-//        if (isLongtime(user)) {
-//            return true;
-//        }
-//
-//        return false;
-//
-//    }
-//
-//    private static boolean isNewDevice(User user, String deviceInfo) {
-//
-//        if (deviceInfo != null && deviceInfo.equals(user.getDeviceInfo())) {
-//            return false;
-//        }
-//
-//        return true;
-//    }
-//
-//    private static boolean isLongtime(User user) {
-//
-//        if (user.getEmailVerificationDate() != null) {
-//
-//            LocalDateTime now = LocalDateTime.now();
-//            LocalDateTime validationDate = user.getEmailVerificationDate();
-//
-//            Duration duration = Duration.between(validationDate, now);
-//
-//            long diffHours = duration.toHours();
-//
-//            return diffHours > 24;
-//
-//        }
-//
-//        return false;
-//
-//    }
-
-    // 아래처럼 메서드로 쓰지말고 메세지 , 토큰생성 response를 만든뒤 , 그내 내부에서 해당로직실행.
-
-//    private Map<String, String> generateAuthToken(User user) {
-//
-//        Map<String, String> authTokens = new HashMap<>();
-//
-//        user.setRefreshToken(refreshToken);
-//
-//        userService.save(user);
-//
-//        authTokens.put("loginToken", loginToken);
-//
-//        return authTokens;
-//    }
-//
-//    private Map<String, String> sendEmailForVerification(User user) {
-//
-//        emailService.sendVerificationEmail(user);
-//
-//        Map<String, String> message = new HashMap<>();
-//
-//        if (!user.isEmailVerified()) {
-//            message.put("message", "환영합니다 , 가입인증 메일을 전송하였습다 인증을 완료해주세요");
-//        } else {
-//            message.put("message", "로그인 인증 메일을 보냈습니다 확인해주세요");
-//        }
-//
-//        return message;
-//    }
-
-//
-//
-
-
 }

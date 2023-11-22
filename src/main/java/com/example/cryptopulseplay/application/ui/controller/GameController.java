@@ -20,6 +20,12 @@ public class GameController {
     private final JwtUtil jwtUtil;
 
 
+    /**
+     * 게임생성
+     * @param gameRequest 참여포인트 및 유저의 예측방향
+     * @param request JWT
+     * @return
+     */
     @PostMapping("/game")
     public ResponseEntity<GameResponse> createGame(@Valid @RequestBody GameRequest gameRequest,
             HttpServletRequest request) {

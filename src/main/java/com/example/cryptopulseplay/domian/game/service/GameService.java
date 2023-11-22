@@ -14,6 +14,13 @@ public class GameService {
 
     private final GameRepository gameRepository;
 
+    /**
+     * 게임참여
+     * @param user
+     * @param amount 참여포인트
+     * @param direction 유저의 예측방향
+     * @return
+     */
     public Game startGame(User user, int amount, Direction direction) {
 
         user.playGame(amount);
