@@ -57,9 +57,11 @@ public class UserService {
 
         user.markEmailAsVerified();
 
+        user.resetEmailVerificationLimit();
+
         user.updateEmailVerifiedDateAndRefreshToken(refreshToken);
 
-         userRepository.save(user);
+        userRepository.save(user);
 
         return jwtUtil.generateToken(user, "loginCheck");
 

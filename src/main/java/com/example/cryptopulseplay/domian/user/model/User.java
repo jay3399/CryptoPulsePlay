@@ -128,6 +128,12 @@ public class User implements Serializable {
         return Duration.between(lastEmailVerification, LocalDateTime.now()).toMinutes() < 15;
     }
 
+    public void resetEmailVerificationLimit() {
+        lastEmailVerification = null;
+    }
+
+
+
 
     @Embeddable
     @AllArgsConstructor
