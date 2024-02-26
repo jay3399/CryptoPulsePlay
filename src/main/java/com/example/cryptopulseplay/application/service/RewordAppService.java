@@ -103,12 +103,18 @@ public class RewordAppService {
                 entityManager.clear();
             }
 
-            entityManager.flush();
-            entityManager.clear();
 
         }
 
+        if (count % BATCH_SIZE != 0) {
+            entityManager.flush();
+            entityManager.clear();
+        }
+
     }
+
+
+
 
 
 }
